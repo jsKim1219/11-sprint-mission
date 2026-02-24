@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class JFCMessageService implements MessageService {
+public class JCFMessageService implements MessageService {
     private final Map<UUID, Message> data;
 
-    public JFCMessageService() {
+    public JCFMessageService() {
         this.data = new HashMap<>();
     }
 

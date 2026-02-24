@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class JFCChannelService implements ChannelService {
+public class JCFChannelService implements ChannelService {
     private final Map<UUID, Channel> data;
 
-    public JFCChannelService() {
+    public JCFChannelService() {
         this.data = new HashMap<>();
     }
 
