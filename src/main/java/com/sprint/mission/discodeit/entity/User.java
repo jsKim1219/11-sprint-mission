@@ -1,11 +1,13 @@
 package com.sprint.mission.discodeit.entity;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class User {
+public class User implements Serializable {
     private UUID id;
     private Long createdAt, updatedAt;
     private String name;
+    private static final Long serialVersionUID = 1L;
 
     public User(String name) {
         this.id = UUID.randomUUID();
@@ -30,6 +32,7 @@ public class User {
     }
 
     public Long updata(String name) {
+        this.name = name;
         return updatedAt = System.currentTimeMillis();
     }
 

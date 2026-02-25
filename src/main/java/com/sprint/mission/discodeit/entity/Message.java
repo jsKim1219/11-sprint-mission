@@ -1,11 +1,13 @@
 package com.sprint.mission.discodeit.entity;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Message {
+public class Message implements Serializable {
     private UUID id;
     private Long createdAt, updatedAt;
     private String name;
+    private static final Long serialVersionUID = 1L;
 
     public Message(String name) {
         this.id = UUID.randomUUID();
