@@ -3,18 +3,41 @@ package com.sprint.mission.discodeit;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
+import com.sprint.mission.discodeit.repository.MessageRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.repository.jcf.JCFChannelRepository;
+import com.sprint.mission.discodeit.repository.jcf.JCFMessageRepository;
+import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.service.basic.BasicChannelService;
+import com.sprint.mission.discodeit.service.basic.BasicMessageService;
+import com.sprint.mission.discodeit.service.basic.BasicUserService;
+import com.sprint.mission.discodeit.service.file.FileChannelService;
+import com.sprint.mission.discodeit.service.file.FileMessageService;
+import com.sprint.mission.discodeit.service.file.FileUserService;
 import com.sprint.mission.discodeit.service.jcf.JCFUserService;
 import com.sprint.mission.discodeit.service.jcf.JCFChannelService;
 import com.sprint.mission.discodeit.service.jcf.JCFMessageService;
 
 public class JavaApplication {
     public static void main(String[] args) {
-        UserService userService = new JCFUserService();
-        ChannelService channelService = new JCFChannelService();
-        MessageService messageService = new JCFMessageService(userService, channelService);
+        //UserService userService = new JCFUserService();
+        UserService fileUserService = new FileUserService();
+        UserRepository userRepository = new JCFUserRepository();
+        UserService userService = new BasicUserService(userRepository);
+
+        //ChannelService channelService = new JCFChannelService();
+        ChannelService fileChannelService = new FileChannelService();
+        ChannelRepository channelRepository = new JCFChannelRepository();
+        ChannelService channelService = new BasicChannelService(channelRepository);
+
+        //MessageService messageService = new JCFMessageService(userService, channelService);
+        MessageService fileMessageService = new FileMessageService();
+        MessageRepository messageRepository = new JCFMessageRepository();
+        MessageService messageService = new BasicMessageService(messageRepository, userRepository, channelRepository);
 
         System.out.println("등록");
         User user = userService.create("kim");
