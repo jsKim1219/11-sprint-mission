@@ -37,9 +37,9 @@ public class FileMessageService implements MessageService {
 
 
     @Override
-    public Message create(String name) {
+    public Message create(String name,UUID userId, UUID channelId) {
         List<Message> messages = loadMessages();
-        Message message = new Message(name);
+        Message message = new Message(name, userId, channelId);
         messages.add(message);
         saveMessages(messages);
         return message;

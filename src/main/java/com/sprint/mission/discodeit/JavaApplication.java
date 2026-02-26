@@ -1,25 +1,27 @@
 package com.sprint.mission.discodeit;
 
+import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
-import com.sprint.mission.discodeit.service.file.FileChannelService;
-import com.sprint.mission.discodeit.service.file.FileMessageService;
-import com.sprint.mission.discodeit.service.file.FileUserService;
 import com.sprint.mission.discodeit.service.jcf.JCFUserService;
 import com.sprint.mission.discodeit.service.jcf.JCFChannelService;
 import com.sprint.mission.discodeit.service.jcf.JCFMessageService;
 
 public class JavaApplication {
     public static void main(String[] args) {
-        UserService userService = new FileUserService();
-        ChannelService channelService = new FileChannelService();
-        MessageService messageService = new FileMessageService();
+        UserService userService = new JCFUserService();
+        ChannelService channelService = new JCFChannelService();
+        MessageService messageService = new JCFMessageService(userService, channelService);
 
         System.out.println("등록");
         User user = userService.create("kim");
+        Channel channel = channelService.create("General");
         System.out.println("생성된 유저 : " + user.getId());
+        Message message = messageService.create("Hello", user.getId(), channel.getId());
+        System.out.println("생성된 메시지: " + message);
 
         System.out.println("조회(단건)");
         User foundUser = userService.findById(user.getId());

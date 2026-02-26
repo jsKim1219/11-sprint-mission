@@ -8,15 +8,27 @@ public class Message implements Serializable {
     private Long createdAt, updatedAt;
     private String name;
     private static final Long serialVersionUID = 1L;
+    private UUID userId;
+    private UUID channelId;
 
-    public Message(String name) {
+    public Message(String name, UUID userId, UUID channelId) {
         this.id = UUID.randomUUID();
         this.createdAt = System.currentTimeMillis();
         this.name = name;
+        this.userId = userId;
+        this.channelId = channelId;
     }
 
     public UUID getId() {
         return this.id;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public UUID getChannelId() {
+        return channelId;
     }
 
     public Long getCreatedAt() {
@@ -36,6 +48,8 @@ public class Message implements Serializable {
         return "Message{" +
                 "id: " + id +
                 ", name: " + name +
+                ", userId: " + userId +
+                ", channelId: " + channelId +
                 ", createdAt: " + createdAt +
                 ", updatedAt: " + updatedAt +
                 "}";
