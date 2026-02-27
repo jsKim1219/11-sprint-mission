@@ -15,8 +15,8 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User create(String name) {
-        User user = new User(name);
+    public User create(String name, String email, String password) {
+        User user = new User(name, email, password);
         userRepository.save(user);
         return user;
     }

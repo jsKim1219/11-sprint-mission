@@ -6,13 +6,15 @@ import java.util.UUID;
 public class User implements Serializable {
     private UUID id;
     private Long createdAt, updatedAt;
-    private String name;
+    private String name, email, password;
     private static final Long serialVersionUID = 1L;
 
-    public User(String name) {
+    public User(String name, String email, String password) {
         this.id = UUID.randomUUID();
         this.createdAt = System.currentTimeMillis();
         this.name = name;
+        this.email = email;
+        this.password = password;
     }
 
     public UUID getId() {

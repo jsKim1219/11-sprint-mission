@@ -6,13 +6,16 @@ import java.util.UUID;
 public class Channel implements Serializable {
     private UUID id;
     private Long createdAt, updatedAt;
-    private String name;
+    private String name, description;
     private static final Long serialVersionUID = 1L;
+    ChannelType type;
 
-    public Channel(String name) {
+    public Channel(ChannelType type, String name, String description) {
         this.id = UUID.randomUUID();
         this.createdAt = System.currentTimeMillis();
         this.name = name;
+        this.description = description;
+        this.type = type;
     }
 
     public UUID getId() {
