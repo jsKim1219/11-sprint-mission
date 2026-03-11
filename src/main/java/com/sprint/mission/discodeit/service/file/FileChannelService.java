@@ -60,11 +60,16 @@ public class FileChannelService implements ChannelService {
     @Override
     public void update(UUID id, String name) {
         List<Channel> channels = loadChannels();
+        boolean isUpdated = false;
         for (Channel channel : channels) {
             if (channel.getId().equals(id)) {
-                channel.updata(name);
+                channel.update(name);
+                isUpdated = true;
                 break;
             }
+        }
+        if(isUpdated) {
+            saveChannels(channels);
         }
     }
 

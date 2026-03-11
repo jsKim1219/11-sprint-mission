@@ -36,7 +36,7 @@ public class BasicChannelService implements ChannelService {
     public void update(UUID id, String name) {
         Channel channel = channelRepository.findById(id);
         if (channel != null) {
-            channel.updata(name);
+            channel.update(name);
             channelRepository.save(channel);
         }
     }

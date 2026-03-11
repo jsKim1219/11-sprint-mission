@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.service.UserService;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class FileUserService implements UserService {
@@ -45,10 +46,10 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public User findById(UUID id) {
+    public Optional<User> findById(UUID id) {
         return loadUsers().stream()
                 .filter(user -> user.getId().equals(id))
-                .findFirst().orElse(null);
+                .findFirst();
     }
 
     @Override
@@ -61,7 +62,7 @@ public class FileUserService implements UserService {
         List<User> users = loadUsers();
         for (User user : users) {
             if(user.getId().equals(id)) {
-                user.updata(name);
+                user.update(name);
                 break;
             }
         }

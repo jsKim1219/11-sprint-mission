@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class FileMessageRepository implements MessageRepository {
-    public static void saveMessages(List<Message> messages) {
+    private void saveMessages(List<Message> messages) {
         try (FileOutputStream fos = new FileOutputStream("message.ser");
              ObjectOutputStream oos = new ObjectOutputStream(fos);
         ) {

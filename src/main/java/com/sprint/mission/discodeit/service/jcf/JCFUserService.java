@@ -3,10 +3,7 @@ package com.sprint.mission.discodeit.service.jcf;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.UserService;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class JCFUserService implements UserService {
     private final Map<UUID, User> data;
@@ -23,8 +20,8 @@ public class JCFUserService implements UserService {
     }
 
     @Override
-    public User findById(UUID id) {
-        return data.get(id);
+    public Optional<User> findById(UUID id) {
+        return Optional.ofNullable(data.get(id));
     }
 
     @Override
@@ -36,7 +33,7 @@ public class JCFUserService implements UserService {
     public void update(UUID id, String name) {
         User user = data.get(id);
         if(user != null) {
-            user.updata(name);
+            user.update(name);
         }
     }
 

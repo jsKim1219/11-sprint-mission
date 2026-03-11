@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class FileChannelRepository implements ChannelRepository {
-    public static void saveChannels(List<Channel> channels) {
+    private void saveChannels(List<Channel> channels) {
         try (FileOutputStream fos = new FileOutputStream("channel.ser");
              ObjectOutputStream oos = new ObjectOutputStream(fos);
         ) {

@@ -5,9 +5,12 @@ import java.util.UUID;
 
 public class User implements Serializable {
     private UUID id;
-    private Long createdAt, updatedAt;
-    private String name, email, password;
-    private static final Long serialVersionUID = 1L;
+    private Long createdAt;
+    private Long updatedAt;
+    private String name;
+    private String email;
+    private String password;
+    private static final long serialVersionUID = 1L;
 
     public User(String name, String email, String password) {
         this.id = UUID.randomUUID();
@@ -33,7 +36,7 @@ public class User implements Serializable {
         return updatedAt;
     }
 
-    public Long updata(String name) {
+    public Long update(String name) {
         this.name = name;
         return updatedAt = System.currentTimeMillis();
     }

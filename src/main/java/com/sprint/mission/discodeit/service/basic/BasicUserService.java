@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class BasicUserService implements UserService {
@@ -22,7 +23,7 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User findById(UUID id) {
+    public Optional<User> findById(UUID id) {
         return userRepository.findById(id);
     }
 
@@ -33,11 +34,10 @@ public class BasicUserService implements UserService {
 
     @Override
     public void update(UUID id, String name) {
-        User user = userRepository.findById(id);
-        if (user != null) {
-            user.updata(name);
-            userRepository.save(user);
-        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        user.update(name);
+        userRepository.save(user);
     }
 
     @Override

@@ -60,11 +60,16 @@ public class FileMessageService implements MessageService {
     @Override
     public void update(UUID id, String name) {
         List<Message> messages = loadMessages();
+        boolean isUpdated = false;
         for (Message message : messages) {
             if (message.getId().equals(id)) {
                 message.update(name);
+                isUpdated = true;
                 break;
             }
+        }
+        if (isUpdated) {
+            saveMessages(messages);
         }
     }
 

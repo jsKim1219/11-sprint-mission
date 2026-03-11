@@ -37,7 +37,7 @@ public class JCFChannelService implements ChannelService {
     public void update(UUID id, String name) {
         Channel channel = data.get(id);
         if (channel != null) {
-            channel.updata(name);
+            channel.update(name);
         }
     }
 

@@ -5,10 +5,12 @@ import java.util.UUID;
 
 public class Channel implements Serializable {
     private UUID id;
-    private Long createdAt, updatedAt;
-    private String name, description;
-    private static final Long serialVersionUID = 1L;
-    ChannelType type;
+    private Long createdAt;
+    private Long updatedAt;
+    private String name;
+    private String description;
+    private static final long serialVersionUID = 1L;
+    private ChannelType type;
 
     public Channel(ChannelType type, String name, String description) {
         this.id = UUID.randomUUID();
@@ -30,7 +32,11 @@ public class Channel implements Serializable {
         return this.updatedAt;
     }
 
-    public Long updata(String name) {
+    public ChannelType getType() {
+        return this.type;
+    }
+
+    public Long update(String name) {
         return this.updatedAt = System.currentTimeMillis();
     }
 
