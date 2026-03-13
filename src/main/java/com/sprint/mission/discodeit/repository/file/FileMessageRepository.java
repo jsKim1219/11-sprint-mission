@@ -2,12 +2,14 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
+import org.springframework.stereotype.Repository;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Repository
 public class FileMessageRepository implements MessageRepository {
     private void saveMessages(List<Message> messages) {
         try (FileOutputStream fos = new FileOutputStream("message.ser");
