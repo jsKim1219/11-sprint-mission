@@ -4,39 +4,29 @@ import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 public class Message implements Serializable {
     private UUID id;
+    private UUID authorId;
+    private UUID channelId;
+    private List<UUID> attachmentIds;
     private Instant createdAt;
     private Instant updatedAt;
     private String content;
     private static final long serialVersionUID = 1L;
-    private UUID userId;
-    private UUID channelId;
 
     public Message(String content, UUID userId, UUID channelId) {
         this.id = UUID.randomUUID();
         this.createdAt = Instant.now();
         this.content = content;
-        this.userId = userId;
+        this.authorId = userId;
         this.channelId = channelId;
     }
 
     public Instant update(String name) {
         return this.updatedAt = Instant.now();
-    }
-
-    @Override
-    public String toString() {
-        return "Message{" +
-                "id: " + id +
-                ", name: " + content +
-                ", userId: " + userId +
-                ", channelId: " + channelId +
-                ", createdAt: " + createdAt +
-                ", updatedAt: " + updatedAt +
-                "}";
     }
 }

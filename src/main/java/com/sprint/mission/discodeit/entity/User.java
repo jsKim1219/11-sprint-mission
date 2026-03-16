@@ -9,6 +9,7 @@ import java.util.UUID;
 @Getter
 public class User implements Serializable {
     private UUID id;
+    private UUID profileId;
     private Instant createdAt;
     private Instant updatedAt;
     private String name;
@@ -19,6 +20,7 @@ public class User implements Serializable {
     public User(String name, String email, String password) {
         this.id = UUID.randomUUID();
         this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
         this.name = name;
         this.email = email;
         this.password = password;
@@ -27,15 +29,5 @@ public class User implements Serializable {
     public Instant update(String name) {
         this.name = name;
         return updatedAt = Instant.now();
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id: " + id +
-                ", name: " + name +
-                ", createdAt: " + createdAt +
-                ", updatedAt: " + updatedAt +
-                "}";
     }
 }
