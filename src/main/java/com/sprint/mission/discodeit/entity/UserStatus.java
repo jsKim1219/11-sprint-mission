@@ -21,6 +21,11 @@ public class UserStatus {
     }
 
     public boolean isOnline() {
-        return this.updatedAt.isAfter(Instant.now().minus(5, ChronoUnit.MINUTES));
+        return this.updatedAt.isAfter(Instant.now().minus(5,
+                ChronoUnit.MINUTES));
+    }
+
+    public void update() {
+        this.updatedAt = Instant.now();
     }
 }
