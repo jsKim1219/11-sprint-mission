@@ -30,4 +30,9 @@ public class User implements Serializable {
         this.name = name;
         return updatedAt = Instant.now();
     }
+
+    public void updateProfile(UUID profileId) {
+        this.profileId = profileId;
+        this.updatedAt = Instant.now();
+    }
 }

@@ -64,4 +64,13 @@ public class FileUserRepository implements UserRepository {
         users.removeIf(user -> user.getId().equals(id));
         saveUsers(users);
     }
+
+    @Override
+    public boolean existsByName(String name) { return false; }
+
+    @Override
+    public boolean existsByEmail(String email) { return false; }
+
+    @Override
+    public Optional<User> findByName(String name) { return Optional.empty(); }
 }
