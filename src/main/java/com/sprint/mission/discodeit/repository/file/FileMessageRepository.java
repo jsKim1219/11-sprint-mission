@@ -63,4 +63,19 @@ public class FileMessageRepository implements MessageRepository {
         messages.removeIf(message -> message.getId().equals(id));
         saveMessages(messages);
     }
+
+    @Override
+    public List<Message> findByChannelId(UUID channelId) {
+        return loadMessages().stream()
+                .filter(message ->
+                        message.getChannelId().equals(channelId)).toList();
+    }
+
+    @Override
+    public void deleteByChannelId(UUID channelId) {
+        List<Message> messages = loadMessages();
+        messages.removeIf(message ->
+                message.getChannelId().equals(channelId));
+        saveMessages(messages);
+    }
 }

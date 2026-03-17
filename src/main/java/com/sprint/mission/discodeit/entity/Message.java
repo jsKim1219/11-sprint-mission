@@ -26,7 +26,12 @@ public class Message implements Serializable {
         this.channelId = channelId;
     }
 
-    public Instant update(String name) {
-        return this.updatedAt = Instant.now();
+    public void update(String content) {
+       this.content = content;
+       this.updatedAt = Instant.now();
+    }
+
+    public void setAttachmentIds(List<UUID> attachmentIds) {
+        this.attachmentIds = attachmentIds;
     }
 }

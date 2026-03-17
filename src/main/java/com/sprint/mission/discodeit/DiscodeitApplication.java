@@ -1,9 +1,6 @@
 package com.sprint.mission.discodeit;
 
-import com.sprint.mission.discodeit.dto.ChannelDto;
-import com.sprint.mission.discodeit.dto.PublicChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.UserCreateRequest;
-import com.sprint.mission.discodeit.dto.UserDto;
+import com.sprint.mission.discodeit.dto.*;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
@@ -26,8 +23,9 @@ public class DiscodeitApplication {
 	}
 
 	static void messageCreateTest(MessageService messageService, ChannelDto channel, UserDto user) {
-		Message message = messageService.create("안녕하세요.", user.id(), channel.id());
-		System.out.println("메시지 생성 완료: " + message.getId());
+		MessageCreateRequest request = new MessageCreateRequest("안녕하세요.", user.id(), channel.id(), null);
+		MessageDto message = messageService.create(request);
+		System.out.println("메시지 생성 완료: " + message.id());
 	}
 
 	public static void main(String[] args) {
