@@ -20,4 +20,8 @@ public class ReadStatus {
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
     }
+
+    public void update() {
+        this.updatedAt = Instant.now();
+    }
 }
