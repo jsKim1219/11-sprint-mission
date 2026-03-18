@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.io.*;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
+@ConditionalOnProperty(prefix = "discodeit.repository", name = "type", havingValue = "file")
 public class FileReadStatusRepository implements ReadStatusRepository {
     private void saveAll(List<ReadStatus> list) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
