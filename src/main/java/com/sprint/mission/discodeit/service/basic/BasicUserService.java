@@ -7,6 +7,8 @@ import com.sprint.mission.discodeit.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -20,8 +22,11 @@ public class BasicUserService implements UserService {
 
     @Override
     public UserDto create(UserCreateRequest request) {
-        if (userRepository.existsByName(request.name()) || userRepository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("이미 사용 중인 이름 혹은 이메일입니다.");
+        if (userRepository.existsByName(request.name())) {
+            throw new IllegalArgumentException("이미 사용 중인 이름입니다.");
+        }
+        if (userRepository.existsByEmail(request.email())) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
 
         User user = new User(request.name(), request.email(), request.password());
@@ -81,8 +86,27 @@ public class BasicUserService implements UserService {
         userRepository.delete(id);
     }
 
+    @Override
+    public UserDto login(UserLoginRequest request) {
+        User user = userRepository.findAll().stream().filter(
+                u -> u.getEmail().equals(request.email())).
+                findFirst().orElseThrow(() -> new IllegalArgumentException(
+                        "가입되지 않은 이메일입니다."));
+        if (!user.getPassword().equals(request.password())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        UserStatus status = userStatusRepository.findByUserId(
+                user.getId()).orElse(null);
+        return toDto(user, status);
+    }
+
     private UserDto toDto(User user, UserStatus status) {
-        boolean isOnline = (status != null) && status.isOnline();
+        boolean isOnline = false;
+
+        if (status != null &&status.getUpdatedAt() != null) {
+            isOnline = Duration.between(
+                    status.getUpdatedAt(), Instant.now()).toMinutes() < 5;
+        }
         return new UserDto(
                 user.getId(), user.getName(), user.getEmail(), user.getProfileId(),
                 user.getCreatedAt(), user.getUpdatedAt(), isOnline
