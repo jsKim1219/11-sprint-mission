@@ -69,6 +69,8 @@ public class BasicMessageService implements MessageService {
         if (message == null) {
             throw new IllegalArgumentException("메시지를 찾을 수 없습니다.");
         }
+        message.update(request.content());
+        messageRepository.save(message);
     }
 
     @Override
