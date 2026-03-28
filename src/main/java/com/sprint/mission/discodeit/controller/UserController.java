@@ -39,7 +39,7 @@ public class UserController {
         userService.delete(userId);
     }
 
-    @RequestMapping("/api/user/findAll")
+    @RequestMapping(value = "/api/user/findAll", method = RequestMethod.GET)
     public ResponseEntity<List<UserDto>> getAllUsers() {
         List<UserDto> users = userService.findAll();
         return ResponseEntity.ok(users);
