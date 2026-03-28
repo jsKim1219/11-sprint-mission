@@ -19,7 +19,7 @@
           "raw": "{\n    \"name\": \"김지성\",\n    \"email\": \"jiseong@test.com\",\n    \"password\": \"password123!\"\n}"
         },
         "url": {
-          "raw": "http://localhost:8080/api/users",
+          "raw": "http://localhost:8080/api/user",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8080",
