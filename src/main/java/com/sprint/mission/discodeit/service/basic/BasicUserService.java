@@ -32,7 +32,9 @@ public class BasicUserService implements UserService {
         User user = new User(request.name(), request.email(), request.password());
 
         if (request.profileImageData() != null) {
-            BinaryContent profileImage = new BinaryContent(request.profileImageData());
+            BinaryContent profileImage = new BinaryContent(request.profileImageData(),
+                    "profile_image.jpg", (long) request.profileImageData().length,
+                    "image/jpeg");
             binaryContentRepository.save(profileImage);
             user.updateProfile(profileImage.getId());
         }
@@ -60,7 +62,7 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public void update(UUID id, UserUpdateRequst request) {
+    public void update(UUID id, UserUpdateRequest request) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
         user.update(request.name());
 
@@ -68,7 +70,9 @@ public class BasicUserService implements UserService {
             if (user.getProfileId() != null) {
                 binaryContentRepository.delete(user.getProfileId());
             }
-            BinaryContent newProfile = new BinaryContent(request.profileImageData());
+            BinaryContent newProfile = new BinaryContent(request.profileImageData(),
+                    "profile_image.jpg", (long) request.profileImageData().length,
+                    "image/jpeg");
             binaryContentRepository.save(newProfile);
             user.updateProfile(newProfile.getId());
         }

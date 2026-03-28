@@ -3,7 +3,7 @@ package com.sprint.mission.discodeit.controller;
 import com.sprint.mission.discodeit.dto.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.UserDto;
 import com.sprint.mission.discodeit.dto.UserStatusUpdateRequest;
-import com.sprint.mission.discodeit.dto.UserUpdateRequst;
+import com.sprint.mission.discodeit.dto.UserUpdateRequest;
 import com.sprint.mission.discodeit.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +26,7 @@ public class UserController {
 
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
     public void updateUser(
-            @PathVariable UUID userId, @RequestBody UserUpdateRequst requst) {
+            @PathVariable UUID userId, @RequestBody UserUpdateRequest requst) {
         userService.update(userId, requst);
     }
 
