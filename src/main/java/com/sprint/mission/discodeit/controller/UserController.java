@@ -5,6 +5,8 @@ import com.sprint.mission.discodeit.dto.UserDto;
 import com.sprint.mission.discodeit.dto.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.UserUpdateRequest;
 import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.service.UserStatusService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,9 +16,11 @@ import java.util.UUID;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    private final UserStatusService userStatusService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserStatusService userStatusService) {
         this.userService = userService;
+        this.userStatusService = userStatusService;
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -26,8 +30,8 @@ public class UserController {
 
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
     public void updateUser(
-            @PathVariable UUID userId, @RequestBody UserUpdateRequest requst) {
-        userService.update(userId, requst);
+            @PathVariable UUID userId, @RequestBody UserUpdateRequest request) {
+        userService.update(userId, request);
     }
 
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
@@ -35,14 +39,15 @@ public class UserController {
         userService.delete(userId);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public List<UserDto> getAllUsers() {
-        return userService.findAll();
+    @RequestMapping("/api/user/findAll")
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<UserDto> users = userService.findAll();
+        return ResponseEntity.ok(users);
     }
 
     @RequestMapping(value = "/{userId}/online-status", method = RequestMethod.PUT)
     public void updateOnlineStatus(
             @PathVariable UUID userId, @RequestBody UserStatusUpdateRequest request) {
-        //
+        userStatusService.updateByUserId(userId);
     }
 }

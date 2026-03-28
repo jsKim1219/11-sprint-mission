@@ -112,8 +112,8 @@ public class BasicUserService implements UserService {
                     status.getUpdatedAt(), Instant.now()).toMinutes() < 5;
         }
         return new UserDto(
-                user.getId(), user.getName(), user.getEmail(), user.getProfileId(),
-                user.getCreatedAt(), user.getUpdatedAt(), isOnline
+                user.getId(), user.getCreatedAt(), user.getUpdatedAt(),
+                user.getName(), user.getEmail(), user.getProfileId(), isOnline
         );
     }
 }

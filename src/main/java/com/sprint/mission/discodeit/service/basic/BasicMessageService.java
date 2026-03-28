@@ -38,7 +38,9 @@ public class BasicMessageService implements MessageService {
         if (request.attachments() != null && !request.attachments().isEmpty()) {
             List<UUID> attachmentIds = new ArrayList<>();
             for (byte[] data : request.attachments()) {
-                BinaryContent content = new BinaryContent(data);
+                BinaryContent content = new BinaryContent(
+                        data, "attachment_file.bin",
+                        (long) data.length, "application/octet-stream");
                 binaryContentRepository.save(content);
                 attachmentIds.add(content.getId());
             }
