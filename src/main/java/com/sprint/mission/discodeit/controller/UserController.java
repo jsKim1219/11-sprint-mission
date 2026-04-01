@@ -11,43 +11,47 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
-    private final UserService userService;
-    private final UserStatusService userStatusService;
 
-    public UserController(UserService userService, UserStatusService userStatusService) {
-        this.userService = userService;
-        this.userStatusService = userStatusService;
-    }
+  private final UserService userService;
+  private final UserStatusService userStatusService;
 
-    @RequestMapping(method = RequestMethod.POST)
-    public UserDto registerUser(@RequestBody UserCreateRequest request) {
-        return userService.create(request);
-    }
+  public UserController(UserService userService, UserStatusService userStatusService) {
+    this.userService = userService;
+    this.userStatusService = userStatusService;
+  }
 
-    @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
-    public void updateUser(
-            @PathVariable UUID userId, @RequestBody UserUpdateRequest request) {
-        userService.update(userId, request);
-    }
+  @PostMapping
+  public UserDto registerUser(@RequestPart("userCreateRequest") UserCreateRequest request,
+      @RequestPart(value = "profile", required = false) MultipartFile profile) {
+    return userService.create(request);
+  }
 
-    @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
-    public void  deleteUser(@PathVariable UUID userId) {
-        userService.delete(userId);
-    }
+  @PutMapping("/{userId}")
+  public void updateUser(
+      @PathVariable UUID userId, @RequestPart("userUpdateRequest") UserUpdateRequest request,
+      @RequestPart(value = "profile", required = false) MultipartFile profile) {
+    userService.update(userId, request, profile);
+  }
 
-    @RequestMapping(value = "/findAll", method = RequestMethod.GET)
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<UserDto> users = userService.findAll();
-        return ResponseEntity.ok(users);
-    }
+  @DeleteMapping("/{userId}")
+  public void deleteUser(@PathVariable UUID userId) {
+    userService.delete(userId);
+  }
 
-    @RequestMapping(value = "/{userId}/online-status", method = RequestMethod.PUT)
-    public void updateOnlineStatus(
-            @PathVariable UUID userId, @RequestBody UserStatusUpdateRequest request) {
-        userStatusService.updateByUserId(userId);
-    }
+  @GetMapping
+  public ResponseEntity<List<UserDto>> getAllUsers() {
+    List<UserDto> users = userService.findAll();
+    return ResponseEntity.ok(users);
+  }
+
+  @PatchMapping(value = "/{userId}/online-status")
+  public void updateOnlineStatus(
+      @PathVariable UUID userId, @RequestBody UserStatusUpdateRequest request) {
+    userStatusService.updateByUserId(userId);
+  }
 }
