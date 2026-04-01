@@ -10,28 +10,29 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/readStatus")
+@RequestMapping("/api/readStatuses")
 public class ReadStatusController {
-    private final ReadStatusService readStatusService;
 
-    public ReadStatusController(ReadStatusService readStatusService) {
-        this.readStatusService = readStatusService;
-    }
+  private final ReadStatusService readStatusService;
 
-    @RequestMapping(method = RequestMethod.POST)
-    public ReadStatusDto createReadStatus(
-            @RequestBody ReadStatusCreateRequest request) {
-        return readStatusService.create(request);
-    }
+  public ReadStatusController(ReadStatusService readStatusService) {
+    this.readStatusService = readStatusService;
+  }
 
-    @RequestMapping(value = "/{readStatusId}", method = RequestMethod.PUT)
-    public void updateReadStatus(@PathVariable UUID readStatusId,
-                                 @RequestBody ReadStatusUpdateRequest request) {
-        readStatusService.update(readStatusId, request);
-    }
+  @PostMapping
+  public ReadStatusDto createReadStatus(
+      @RequestBody ReadStatusCreateRequest request) {
+    return readStatusService.create(request);
+  }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public List<ReadStatusDto> getReadStatusByUserId(@RequestParam UUID userId) {
-        return readStatusService.findAllByUserId(userId);
-    }
+  @PatchMapping("/{readStatusId}")
+  public void updateReadStatus(@PathVariable UUID readStatusId,
+      @RequestBody ReadStatusUpdateRequest request) {
+    readStatusService.update(readStatusId, request);
+  }
+
+  @GetMapping
+  public List<ReadStatusDto> getReadStatusByUserId(@RequestParam UUID userId) {
+    return readStatusService.findAllByUserId(userId);
+  }
 }

@@ -41,7 +41,7 @@ public class BasicChannelService implements ChannelService {
     channelRepository.save(channel);
     if (request.participantIds() != null) {
       for (UUID userId : request.participantIds()) {
-        readStatusRepository.save(new ReadStatus(userId, channel.getId()));
+        readStatusRepository.save(new ReadStatus(userId, channel.getId(), Instant.now()));
       }
     }
     return toDto(channel);
