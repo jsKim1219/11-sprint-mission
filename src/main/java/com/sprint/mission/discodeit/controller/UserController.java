@@ -31,7 +31,7 @@ public class UserController {
     return userService.create(request);
   }
 
-  @PutMapping("/{userId}")
+  @PatchMapping("/{userId}")
   public void updateUser(
       @PathVariable UUID userId, @RequestPart("userUpdateRequest") UserUpdateRequest request,
       @RequestPart(value = "profile", required = false) MultipartFile profile) {
@@ -49,7 +49,7 @@ public class UserController {
     return ResponseEntity.ok(users);
   }
 
-  @PatchMapping(value = "/{userId}/online-status")
+  @PatchMapping(value = "/{userId}/userStatus")
   public void updateOnlineStatus(
       @PathVariable UUID userId, @RequestBody UserStatusUpdateRequest request) {
     userStatusService.updateByUserId(userId, request);

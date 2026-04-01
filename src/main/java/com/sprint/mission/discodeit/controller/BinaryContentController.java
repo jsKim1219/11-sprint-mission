@@ -28,7 +28,7 @@ public class BinaryContentController {
 
   @GetMapping
   public List<BinaryContentDto> getMultipleBinaryContent(
-      @RequestParam List<UUID> id) {
-    return binaryContentService.findAllByIdIn(id);
+      @RequestParam("binaryContentIds") List<UUID> binaryContentIds) {
+    return binaryContentService.findAllByIdIn(binaryContentIds);
   }
 }
