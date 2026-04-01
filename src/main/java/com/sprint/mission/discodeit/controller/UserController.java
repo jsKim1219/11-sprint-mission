@@ -52,6 +52,6 @@ public class UserController {
   @PatchMapping(value = "/{userId}/online-status")
   public void updateOnlineStatus(
       @PathVariable UUID userId, @RequestBody UserStatusUpdateRequest request) {
-    userStatusService.updateByUserId(userId);
+    userStatusService.updateByUserId(userId, request);
   }
 }
