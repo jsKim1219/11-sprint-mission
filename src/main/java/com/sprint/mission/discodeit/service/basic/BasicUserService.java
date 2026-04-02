@@ -24,7 +24,7 @@ public class BasicUserService implements UserService {
   private final UserStatusRepository userStatusRepository;
 
   @Override
-  public UserDto create(UserCreateRequest request) {
+  public UserDto create(UserCreateRequest request, MultipartFile profile) {
     if (userRepository.existsByUsername(request.username())) {
       throw new IllegalArgumentException("이미 사용 중인 이름입니다.");
     }
@@ -34,12 +34,15 @@ public class BasicUserService implements UserService {
 
     User user = new User(request.username(), request.email(), request.password());
 
-    if (request.profileImageData() != null) {
-      BinaryContent profileImage = new BinaryContent(request.profileImageData(),
-          "profile_image.jpg", (long) request.profileImageData().length,
-          "image/jpeg");
-      binaryContentRepository.save(profileImage);
-      user.updateProfile(profileImage.getId());
+    try {
+      if (profile != null && !profile.isEmpty()) {
+        BinaryContent profileImage = new BinaryContent(profile.getBytes(),
+            profile.getOriginalFilename(), profile.getSize(), profile.getContentType());
+        binaryContentRepository.save(profileImage);
+        user.updateProfile(profileImage.getId());
+      }
+    } catch (IOException e) {
+      throw new RuntimeException("프로필 이미지 처리 중 오류가 발생했습니다.");
     }
 
     userRepository.save(user);
@@ -102,10 +105,9 @@ public class BasicUserService implements UserService {
 
   @Override
   public UserDto login(UserLoginRequest request) {
-    User user = userRepository.findAll().stream().filter(
-            u -> u.getUsername().equals(request.username())).
-        findFirst().orElseThrow(() -> new IllegalArgumentException(
-            "가입되지 않은 이메일입니다."));
+    User user = userRepository.findByUsername(request.username())
+        .orElseThrow(() ->
+            new IllegalArgumentException("가입되지 않은 유저이름입니다."));
     if (!user.getPassword().equals(request.password())) {
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
     }
@@ -115,12 +117,8 @@ public class BasicUserService implements UserService {
   }
 
   private UserDto toDto(User user, UserStatus status) {
-    boolean isOnline = false;
+    boolean isOnline = (status != null) && status.isOnline();
 
-    if (status != null && status.getUpdatedAt() != null) {
-      isOnline = Duration.between(
-          status.getUpdatedAt(), Instant.now()).toMinutes() < 5;
-    }
     return new UserDto(
         user.getId(), user.getCreatedAt(), user.getUpdatedAt(),
         user.getUsername(), user.getEmail(), user.getProfileId(), isOnline

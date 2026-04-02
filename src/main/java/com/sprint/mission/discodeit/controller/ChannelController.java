@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.dto.ChannelUpdateRequest;
 import com.sprint.mission.discodeit.dto.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.service.ChannelService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,13 +13,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/channels")
+@RequiredArgsConstructor
 public class ChannelController {
 
   private final ChannelService channelService;
-
-  public ChannelController(ChannelService channelService) {
-    this.channelService = channelService;
-  }
 
   @PostMapping("/public")
   public ChannelDto createPublicChannel(@RequestBody PublicChannelCreateRequest request) {

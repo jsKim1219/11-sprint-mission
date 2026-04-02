@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.dto.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.UserUpdateRequest;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,20 +16,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
 
   private final UserService userService;
   private final UserStatusService userStatusService;
 
-  public UserController(UserService userService, UserStatusService userStatusService) {
-    this.userService = userService;
-    this.userStatusService = userStatusService;
-  }
-
   @PostMapping
   public UserDto registerUser(@RequestPart("userCreateRequest") UserCreateRequest request,
       @RequestPart(value = "profile", required = false) MultipartFile profile) {
-    return userService.create(request);
+    return userService.create(request, profile);
   }
 
   @PatchMapping("/{userId}")

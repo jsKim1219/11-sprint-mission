@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.dto.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.MessageDto;
 import com.sprint.mission.discodeit.dto.MessageUpdateRequest;
 import com.sprint.mission.discodeit.service.MessageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,13 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/messages")
+@RequiredArgsConstructor
 public class MessageController {
 
   private final MessageService messageService;
-
-  public MessageController(MessageService messageService) {
-    this.messageService = messageService;
-  }
 
   @PostMapping
   public MessageDto sendMessage(@RequestPart("messageCreateRequest") MessageCreateRequest request,
