@@ -61,7 +61,7 @@ public class BasicReadStatusService implements ReadStatusService {
     if (readStatus == null) {
       throw new IllegalArgumentException("정보를 찾을 수 없습니다.");
     }
-    readStatus.update(readStatus.getLastReadAt());
+    readStatus.update(request.newLastReadAt());
     readStatusRepository.save(readStatus);
   }
 
