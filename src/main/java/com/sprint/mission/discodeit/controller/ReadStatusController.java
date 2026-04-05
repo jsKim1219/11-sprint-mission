@@ -24,9 +24,9 @@ public class ReadStatusController {
   }
 
   @PatchMapping("/{readStatusId}")
-  public void updateReadStatus(@PathVariable UUID readStatusId,
+  public ReadStatusDto updateReadStatus(@PathVariable UUID readStatusId,
       @RequestBody ReadStatusUpdateRequest request) {
-    readStatusService.update(readStatusId, request);
+    return readStatusService.update(readStatusId, request);
   }
 
   @GetMapping

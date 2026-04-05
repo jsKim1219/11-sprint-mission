@@ -56,13 +56,14 @@ public class BasicReadStatusService implements ReadStatusService {
   }
 
   @Override
-  public void update(UUID id, ReadStatusUpdateRequest request) {
+  public ReadStatusDto update(UUID id, ReadStatusUpdateRequest request) {
     ReadStatus readStatus = readStatusRepository.findById(id);
     if (readStatus == null) {
       throw new IllegalArgumentException("정보를 찾을 수 없습니다.");
     }
     readStatus.update(request.newLastReadAt());
     readStatusRepository.save(readStatus);
+    return toDto(readStatus);
   }
 
   @Override
