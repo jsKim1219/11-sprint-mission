@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.util.FileLockProvider;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
@@ -66,13 +67,13 @@ public class FileMessageRepository implements MessageRepository {
   }
 
   @Override
-  public Message findById(UUID id) {
+  public Optional<Message> findById(UUID id) {
     ReentrantLock lock = fileLockProvider.getLock(filepath);
     lock.lock();
     try {
       return loadMessages().stream()
           .filter(message -> message.getId().equals(id))
-          .findFirst().orElse(null);
+          .findFirst();
     } finally {
       lock.unlock();
     }

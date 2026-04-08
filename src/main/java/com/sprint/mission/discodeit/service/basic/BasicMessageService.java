@@ -38,7 +38,7 @@ public class BasicMessageService implements MessageService {
       throw new IllegalArgumentException("채널이 존재하지 않습니다.");
     }
     Message message = new Message(request.content(), request.authorId(), request.channelId());
-    if (attachments != null && attachments.isEmpty()) {
+    if (attachments != null && !attachments.isEmpty()) {
       List<UUID> attachmentIds = new ArrayList<>();
       for (MultipartFile file : attachments) {
         try {
@@ -58,10 +58,8 @@ public class BasicMessageService implements MessageService {
 
   @Override
   public MessageDto findById(UUID id) {
-    Message message = messageRepository.findById(id);
-    if (message == null) {
-      throw new IllegalArgumentException("메시지를 찾을 수 없습니다.");
-    }
+    Message message = messageRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
     return toDto(message);
   }
 
@@ -73,20 +71,16 @@ public class BasicMessageService implements MessageService {
 
   @Override
   public void update(UUID id, MessageUpdateRequest request) {
-    Message message = messageRepository.findById(id);
-    if (message == null) {
-      throw new IllegalArgumentException("메시지를 찾을 수 없습니다.");
-    }
+    Message message = messageRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
     message.update(request.newContent());
     messageRepository.save(message);
   }
 
   @Override
   public void delete(UUID id) {
-    Message message = messageRepository.findById(id);
-    if (message == null) {
-      throw new IllegalArgumentException("메시지를 찾을 수 없습니다.");
-    }
+    Message message = messageRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
     if (message.getAttachmentIds() != null) {
       for (UUID attachmentId : message.getAttachmentIds()) {
         binaryContentRepository.delete(attachmentId);

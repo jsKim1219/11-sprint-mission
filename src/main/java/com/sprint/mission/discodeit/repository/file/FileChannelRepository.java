@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.util.FileLockProvider;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
@@ -66,13 +67,13 @@ public class FileChannelRepository implements ChannelRepository {
   }
 
   @Override
-  public Channel findById(UUID id) {
+  public Optional<Channel> findById(UUID id) {
     ReentrantLock lock = fileLockProvider.getLock(filePath);
     lock.lock();
     try {
       return loadChannels().stream()
           .filter(channel -> channel.getId().equals(id))
-          .findFirst().orElse(null);
+          .findFirst();
     } finally {
       lock.unlock();
     }

@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.util.FileLockProvider;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
@@ -100,12 +101,12 @@ public class FileReadStatusRepository implements ReadStatusRepository {
   }
 
   @Override
-  public ReadStatus findById(UUID id) {
+  public Optional<ReadStatus> findById(UUID id) {
     ReentrantLock lock = fileLockProvider.getLock(filePath);
     lock.lock();
     try {
       return loadAll().stream().filter(rs ->
-          rs.getId().equals(id)).findFirst().orElse(null);
+          rs.getId().equals(id)).findFirst();
     } finally {
       lock.unlock();
     }

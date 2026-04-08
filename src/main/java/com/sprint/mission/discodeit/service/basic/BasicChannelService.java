@@ -49,10 +49,8 @@ public class BasicChannelService implements ChannelService {
 
   @Override
   public ChannelDto findById(UUID id) {
-    Channel channel = channelRepository.findById(id);
-    if (channel == null) {
-      throw new IllegalArgumentException("채널을 찾을 수 없습니다.");
-    }
+    Channel channel = channelRepository.findById(id).
+        orElseThrow(() -> new IllegalArgumentException("채널을 찾을 수 없습니다."));
     return toDto(channel);
   }
 
@@ -69,10 +67,8 @@ public class BasicChannelService implements ChannelService {
 
   @Override
   public void update(UUID id, ChannelUpdateRequest request) {
-    Channel channel = channelRepository.findById(id);
-    if (channel == null) {
-      throw new IllegalArgumentException("채널을 찾을 수 없습니다.");
-    }
+    Channel channel = channelRepository.findById(id).
+        orElseThrow(() -> new IllegalArgumentException("채널을 찾을 수 없습니다."));
     if (channel.getType() == ChannelType.PRIVATE) {
       throw new IllegalArgumentException("프라이빗 채널을 수정할 수 없습니다.");
     }
@@ -82,10 +78,8 @@ public class BasicChannelService implements ChannelService {
 
   @Override
   public void delete(UUID id) {
-    Channel channel = channelRepository.findById(id);
-    if (channel == null) {
-      throw new IllegalArgumentException("채널을 찾을 수 없습니다.");
-    }
+    Channel channel = channelRepository.findById(id).
+        orElseThrow(() -> new IllegalArgumentException("채널을 찾을 수 없습니다."));
     readStatusRepository.deleteByChannelId(id);
     messageRepository.deleteByChannelId(id);
     channelRepository.delete(id);

@@ -42,10 +42,8 @@ public class BasicReadStatusService implements ReadStatusService {
 
   @Override
   public ReadStatusDto findById(UUID id) {
-    ReadStatus readStatus = readStatusRepository.findById(id);
-    if (readStatus == null) {
-      throw new IllegalArgumentException("정보를 찾을 수 없습니다.");
-    }
+    ReadStatus readStatus = readStatusRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("정보를 찾을 수 없습니다."));
     return toDto(readStatus);
   }
 
@@ -57,10 +55,8 @@ public class BasicReadStatusService implements ReadStatusService {
 
   @Override
   public ReadStatusDto update(UUID id, ReadStatusUpdateRequest request) {
-    ReadStatus readStatus = readStatusRepository.findById(id);
-    if (readStatus == null) {
-      throw new IllegalArgumentException("정보를 찾을 수 없습니다.");
-    }
+    ReadStatus readStatus = readStatusRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("정보를 찾을 수 없습니다."));
     readStatus.update(request.newLastReadAt());
     readStatusRepository.save(readStatus);
     return toDto(readStatus);

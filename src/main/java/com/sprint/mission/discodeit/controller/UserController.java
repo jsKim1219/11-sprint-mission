@@ -7,7 +7,6 @@ import com.sprint.mission.discodeit.dto.UserUpdateRequest;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,9 +40,8 @@ public class UserController {
   }
 
   @GetMapping
-  public ResponseEntity<List<UserDto>> getAllUsers() {
-    List<UserDto> users = userService.findAll();
-    return ResponseEntity.ok(users);
+  public List<UserDto> getAllUsers() {
+    return userService.findAll();
   }
 
   @PatchMapping(value = "/{userId}/userStatus")
