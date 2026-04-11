@@ -1,29 +1,46 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.util.ArrayList;
-import lombok.Getter;
-
-import java.io.Serializable;
-import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Entity
+@Table(name = "messages")
 @Getter
-public class Message implements Serializable {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Message extends BaseUpdatableEntity {
 
-  private static final long serialVersionUID = 1L;
-  private UUID id;
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "message_attachments",
+      joinColumns = @JoinColumn(name = "message_id"),
+      inverseJoinColumns = @JoinColumn(name = "attachment_id"))
   private List<BinaryContent> attachments = new ArrayList<>();
-  private Instant createdAt;
-  private Instant updatedAt;
+
+  @Column(columnDefinition = "TEXT")
   private String content;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "author_id", referencedColumnName = "id")
   private User author;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "channel_id", referencedColumnName = "id", nullable = false)
   private Channel channel;
 
 
   public Message(String content, User author, Channel channel) {
-    this.id = UUID.randomUUID();
-    this.createdAt = Instant.now();
     this.content = content;
     this.author = author;
     this.channel = channel;
@@ -31,7 +48,6 @@ public class Message implements Serializable {
 
   public void update(String content) {
     this.content = content;
-    this.updatedAt = Instant.now();
   }
 
   public void setAttachments(List<BinaryContent> attachments) {

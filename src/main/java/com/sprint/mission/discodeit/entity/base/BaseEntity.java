@@ -7,20 +7,23 @@ import jakarta.persistence.MappedSuperclass;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
-@Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseEntity {
+public abstract class BaseEntity {
 
   @Id
+  @Column(columnDefinition = "uuid", updatable = false, nullable = false)
   private UUID id;
 
   @CreatedDate
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt;
+
+  protected BaseEntity() {
+    this.id = UUID.randomUUID();
+  }
 }
