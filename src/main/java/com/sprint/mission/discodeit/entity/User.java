@@ -9,14 +9,15 @@ import java.util.UUID;
 @Getter
 public class User implements Serializable {
 
+  private static final long serialVersionUID = 1L;
   private UUID id;
-  private UUID profileId;
   private Instant createdAt;
   private Instant updatedAt;
   private String username;
   private String email;
   private String password;
-  private static final long serialVersionUID = 1L;
+  private BinaryContent profile;
+  private UserStatus status;
 
   public User(String username, String email, String password) {
     this.id = UUID.randomUUID();
@@ -32,8 +33,12 @@ public class User implements Serializable {
     return updatedAt = Instant.now();
   }
 
-  public void updateProfile(UUID profileId) {
-    this.profileId = profileId;
+  public void updateProfile(BinaryContent profile) {
+    this.profile = profile;
     this.updatedAt = Instant.now();
+  }
+
+  public void updateStatus(UserStatus status) {
+    this.status = status;
   }
 }

@@ -8,9 +8,11 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.ReadStatus;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class BasicChannelService implements ChannelService {
   private final ChannelRepository channelRepository;
   private final ReadStatusRepository readStatusRepository;
   private final MessageRepository messageRepository;
+  private final UserRepository userRepository;
 
   @Override
   public ChannelDto createPublic(PublicChannelCreateRequest request) {
@@ -41,7 +44,9 @@ public class BasicChannelService implements ChannelService {
     channelRepository.save(channel);
     if (request.participantIds() != null) {
       for (UUID userId : request.participantIds()) {
-        readStatusRepository.save(new ReadStatus(userId, channel.getId(), Instant.now()));
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        readStatusRepository.save(new ReadStatus(user, channel, Instant.now()));
       }
     }
     return toDto(channel);
@@ -57,7 +62,7 @@ public class BasicChannelService implements ChannelService {
   @Override
   public List<ChannelDto> findAllByUserId(UUID userId) {
     List<UUID> userPrivateChannelIds = readStatusRepository.findByUserId(userId).
-        stream().map(ReadStatus::getChannelId).toList();
+        stream().map(readStatus -> readStatus.getChannel().getId()).toList();
     return channelRepository.findAll().stream().filter(
         channel ->
             channel.getType() == ChannelType.PUBLIC ||
@@ -92,7 +97,7 @@ public class BasicChannelService implements ChannelService {
     List<UUID> participantIds = null;
     if (channel.getType() == ChannelType.PRIVATE) {
       participantIds = readStatusRepository.findByChannelId(channel.getId()).
-          stream().map(ReadStatus::getUserId).toList();
+          stream().map(readStatus -> readStatus.getUser().getId()).toList();
     }
     return new ChannelDto(channel.getId(), channel.getType(), channel.getName(),
         channel.getDescription(), channel.getCreatedAt(), channel.getUpdatedAt(),

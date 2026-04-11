@@ -11,14 +11,14 @@ import java.util.UUID;
 public class UserStatus implements Serializable {
 
   private UUID id;
-  private UUID userId;
   private Instant createdAt;
   private Instant updatedAt;
   private Instant lastActiveAt;
+  private User user;
 
-  public UserStatus(UUID userId) {
+  public UserStatus(User user) {
     this.id = UUID.randomUUID();
-    this.userId = userId;
+    this.user = user;
     this.createdAt = Instant.now();
     this.updatedAt = Instant.now();
     this.lastActiveAt = Instant.now();

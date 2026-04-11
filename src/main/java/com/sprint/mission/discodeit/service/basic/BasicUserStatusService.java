@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.UserStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.UserStatusDto;
 import com.sprint.mission.discodeit.dto.UserStatusUpdateRequest;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
@@ -23,13 +24,12 @@ public class BasicUserStatusService implements UserStatusService {
 
   @Override
   public UserStatusDto create(UserStatusCreateRequest request) {
-    if (userRepository.findById(request.userId()).isEmpty()) {
-      throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
-    }
+    User user = userRepository.findById(request.userId())
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
     if (userStatusRepository.existsByUserId(request.userId())) {
       throw new IllegalArgumentException("이미 해당 사용자의 상태 정보가 존재합니다.");
     }
-    UserStatus userStatus = new UserStatus(request.userId());
+    UserStatus userStatus = new UserStatus(user);
     userStatusRepository.save(userStatus);
     return toDto(userStatus);
   }
@@ -69,7 +69,7 @@ public class BasicUserStatusService implements UserStatusService {
   }
 
   private UserStatusDto toDto(UserStatus userStatus) {
-    return new UserStatusDto(userStatus.getId(), userStatus.getUserId(),
+    return new UserStatusDto(userStatus.getId(), userStatus.getUser().getId(),
         userStatus.getCreatedAt(), userStatus.getUpdatedAt(),
         userStatus.getLastActiveAt(), userStatus.isOnline());
   }

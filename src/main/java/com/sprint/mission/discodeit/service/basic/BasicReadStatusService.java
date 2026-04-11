@@ -3,7 +3,9 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.ReadStatusDto;
 import com.sprint.mission.discodeit.dto.ReadStatusUpdateRequest;
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ReadStatus;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -25,17 +27,15 @@ public class BasicReadStatusService implements ReadStatusService {
 
   @Override
   public ReadStatusDto create(ReadStatusCreateRequest request) {
-    if (userRepository.findById(request.userId()).isEmpty()) {
-      throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
-    }
-    if (channelRepository.findById(request.channelId()) == null) {
-      throw new IllegalArgumentException("존재하지 않는 채널입니다.");
-    }
+    User user = userRepository.findById(request.userId())
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+    Channel channel = channelRepository.findById(request.channelId())
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채널입니다."));
+
     if (readStatusRepository.existsByUserIdAndChannelId(request.userId(), request.channelId())) {
       throw new IllegalArgumentException("이미 해당 채널의 읽음 상태 정보가 존재합니다.");
     }
-    ReadStatus readStatus = new ReadStatus(request.userId(), request.channelId(),
-        request.lastReadAt());
+    ReadStatus readStatus = new ReadStatus(user, channel, request.lastReadAt());
     readStatusRepository.save(readStatus);
     return toDto(readStatus);
   }
@@ -68,8 +68,8 @@ public class BasicReadStatusService implements ReadStatusService {
   }
 
   private ReadStatusDto toDto(ReadStatus readStatus) {
-    return new ReadStatusDto(readStatus.getId(), readStatus.getUserId(),
-        readStatus.getChannelId(), readStatus.getCreatedAt(),
+    return new ReadStatusDto(readStatus.getId(), readStatus.getUser().getId(),
+        readStatus.getChannel().getId(), readStatus.getCreatedAt(),
         readStatus.getUpdatedAt(), readStatus.getLastReadAt());
   }
 }

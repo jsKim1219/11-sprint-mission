@@ -39,16 +39,16 @@ public class BasicUserService implements UserService {
         BinaryContent profileImage = new BinaryContent(profile.getBytes(),
             profile.getOriginalFilename(), profile.getSize(), profile.getContentType());
         binaryContentRepository.save(profileImage);
-        user.updateProfile(profileImage.getId());
+        user.updateProfile(profileImage);
       }
     } catch (IOException e) {
       throw new RuntimeException("프로필 이미지 처리 중 오류가 발생했습니다.");
     }
 
     userRepository.save(user);
-
-    UserStatus userStatus = new UserStatus(user.getId());
+    UserStatus userStatus = new UserStatus(user);
     userStatusRepository.save(userStatus);
+    user.updateStatus(userStatus);
 
     return toDto(user, userStatus);
   }
@@ -77,13 +77,13 @@ public class BasicUserService implements UserService {
     }
     try {
       if (profile != null && !profile.isEmpty()) {
-        if (user.getProfileId() != null) {
-          binaryContentRepository.delete(user.getProfileId());
+        if (user.getProfile() != null) {
+          binaryContentRepository.delete(user.getProfile().getId());
         }
         BinaryContent newProfile = new BinaryContent(profile.getBytes(),
             profile.getOriginalFilename(), profile.getSize(), profile.getContentType());
         binaryContentRepository.save(newProfile);
-        user.updateProfile(newProfile.getId());
+        user.updateProfile(newProfile);
       }
     } catch (IOException e) {
       throw new RuntimeException("파일 처리 중 오류가 발생했습니다.", e);
@@ -97,8 +97,8 @@ public class BasicUserService implements UserService {
         .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
     userStatusRepository.deleteByUserId(user.getId());
-    if (user.getProfileId() != null) {
-      binaryContentRepository.delete(user.getProfileId());
+    if (user.getProfile() != null) {
+      binaryContentRepository.delete(user.getProfile().getId());
     }
     userRepository.delete(id);
   }
@@ -118,10 +118,11 @@ public class BasicUserService implements UserService {
 
   private UserDto toDto(User user, UserStatus status) {
     boolean isOnline = (status != null) && status.isOnline();
+    UUID profileId = user.getProfile() != null ? user.getProfile().getId() : null;
 
     return new UserDto(
         user.getId(), user.getCreatedAt(), user.getUpdatedAt(),
-        user.getUsername(), user.getEmail(), user.getProfileId(), isOnline
+        user.getUsername(), user.getEmail(), profileId, isOnline
     );
   }
 }
