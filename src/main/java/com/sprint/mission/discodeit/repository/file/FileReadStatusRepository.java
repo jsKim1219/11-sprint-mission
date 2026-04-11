@@ -68,7 +68,7 @@ public class FileReadStatusRepository implements ReadStatusRepository {
     lock.lock();
     try {
       return loadAll().stream().filter(rs ->
-          rs.getChannelId().equals(channelId)).toList();
+          rs.getChannel().getId().equals(channelId)).toList();
     } finally {
       lock.unlock();
     }
@@ -80,7 +80,7 @@ public class FileReadStatusRepository implements ReadStatusRepository {
     lock.lock();
     try {
       return loadAll().stream().filter(rs ->
-          rs.getUserId().equals(userId)).toList();
+          rs.getUser().getId().equals(userId)).toList();
     } finally {
       lock.unlock();
     }
@@ -93,7 +93,7 @@ public class FileReadStatusRepository implements ReadStatusRepository {
     try {
       List<ReadStatus> list = loadAll();
       list.removeIf(rs ->
-          rs.getChannelId().equals(channelId));
+          rs.getChannel().getId().equals(channelId));
       saveAll(list);
     } finally {
       lock.unlock();
@@ -131,8 +131,8 @@ public class FileReadStatusRepository implements ReadStatusRepository {
     lock.lock();
     try {
       return loadAll().stream().anyMatch(rs ->
-          rs.getUserId().equals(userId) &&
-              rs.getChannelId().equals(channelId));
+          rs.getUser().getId().equals(userId) &&
+              rs.getChannel().getId().equals(channelId));
     } finally {
       lock.unlock();
     }

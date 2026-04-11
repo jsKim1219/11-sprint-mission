@@ -110,7 +110,7 @@ public class FileMessageRepository implements MessageRepository {
     try {
       return loadMessages().stream()
           .filter(message ->
-              message.getChannelId().equals(channelId)).toList();
+              message.getChannel().getId().equals(channelId)).toList();
     } finally {
       lock.unlock();
     }
@@ -123,7 +123,7 @@ public class FileMessageRepository implements MessageRepository {
     try {
       List<Message> messages = loadMessages();
       messages.removeIf(message ->
-          message.getChannelId().equals(channelId));
+          message.getChannel().getId().equals(channelId));
       saveMessages(messages);
     } finally {
       lock.unlock();

@@ -22,7 +22,7 @@ public class BasicAuthService implements AuthService {
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
     }
     return new UserDto(user.getId(), user.getCreatedAt(), user.getUpdatedAt(),
-        user.getUsername(), user.getEmail(), user.getProfileId(),
+        user.getUsername(), user.getEmail(), user.getProfile().getId(),
         true);
   }
 }

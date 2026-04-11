@@ -69,7 +69,7 @@ public class FileUserStatusRepository implements UserStatusRepository {
     lock.lock();
     try {
       return loadAll().stream().filter(us ->
-          us.getUserId().equals(userId)).findFirst();
+          us.getUser().getId().equals(userId)).findFirst();
     } finally {
       lock.unlock();
     }
@@ -81,7 +81,7 @@ public class FileUserStatusRepository implements UserStatusRepository {
     lock.lock();
     try {
       List<UserStatus> list = loadAll();
-      list.removeIf(us -> us.getUserId().equals(userId));
+      list.removeIf(us -> us.getUser().getId().equals(userId));
       saveAll(list);
     } finally {
       lock.unlock();
@@ -130,7 +130,7 @@ public class FileUserStatusRepository implements UserStatusRepository {
     lock.lock();
     try {
       return loadAll().stream().anyMatch(us ->
-          us.getUserId().equals(userId));
+          us.getUser().getId().equals(userId));
     } finally {
       lock.unlock();
     }
