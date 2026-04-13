@@ -11,14 +11,17 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BasicBinaryContentService implements BinaryContentService {
 
   private final BinaryContentRepository binaryContentRepository;
 
   @Override
+  @Transactional
   public BinaryContentDto create(BinaryContentCreateRequest request) {
     BinaryContent binaryContent = new BinaryContent(request.bytes(),
         request.fileName(), request.size(), request.contentType());
@@ -40,8 +43,9 @@ public class BasicBinaryContentService implements BinaryContentService {
   }
 
   @Override
+  @Transactional
   public void delete(UUID id) {
-    binaryContentRepository.delete(id);
+    binaryContentRepository.deleteById(id);
   }
 
   private BinaryContentDto toDto(BinaryContent binaryContent) {

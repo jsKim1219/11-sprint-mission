@@ -8,21 +8,23 @@ import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserStatusService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BasicUserStatusService implements UserStatusService {
 
   private final UserStatusRepository userStatusRepository;
   private final UserRepository userRepository;
 
   @Override
+  @Transactional
   public UserStatusDto create(UserStatusCreateRequest request) {
     User user = userRepository.findById(request.userId())
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
@@ -48,24 +50,25 @@ public class BasicUserStatusService implements UserStatusService {
   }
 
   @Override
+  @Transactional
   public void update(UUID id, UserStatusUpdateRequest request) {
     UserStatus userStatus = userStatusRepository.findById(id).orElseThrow(
         () -> new IllegalArgumentException("상태 정보를 찾을 수 없습니다."));
     userStatus.update(request.newLastActiveAt());
-    userStatusRepository.save(userStatus);
   }
 
   @Override
+  @Transactional
   public void updateByUserId(UUID userId, UserStatusUpdateRequest request) {
     UserStatus userStatus = userStatusRepository.findByUserId(userId).orElseThrow(
         () -> new IllegalArgumentException("해당 사용자의 상태 정보를 찾을 수 없습니다."));
     userStatus.update(request.newLastActiveAt());
-    userStatusRepository.save(userStatus);
   }
 
   @Override
+  @Transactional
   public void delete(UUID id) {
-    userStatusRepository.delete(id);
+    userStatusRepository.deleteById(id);
   }
 
   private UserStatusDto toDto(UserStatus userStatus) {

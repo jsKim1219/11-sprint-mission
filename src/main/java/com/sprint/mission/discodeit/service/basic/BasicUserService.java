@@ -1,29 +1,34 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.*;
-import com.sprint.mission.discodeit.entity.*;
-import com.sprint.mission.discodeit.repository.*;
+import com.sprint.mission.discodeit.dto.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.UserDto;
+import com.sprint.mission.discodeit.dto.UserLoginRequest;
+import com.sprint.mission.discodeit.dto.UserUpdateRequest;
+import com.sprint.mission.discodeit.entity.BinaryContent;
+import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.repository.BinaryContentRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.UserService;
 import java.io.IOException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BasicUserService implements UserService {
 
   private final UserRepository userRepository;
   private final BinaryContentRepository binaryContentRepository;
-  private final UserStatusRepository userStatusRepository;
 
   @Override
+  @Transactional
   public UserDto create(UserCreateRequest request, MultipartFile profile) {
     if (userRepository.existsByUsername(request.username())) {
       throw new IllegalArgumentException("이미 사용 중인 이름입니다.");
@@ -45,10 +50,10 @@ public class BasicUserService implements UserService {
       throw new RuntimeException("프로필 이미지 처리 중 오류가 발생했습니다.");
     }
 
-    userRepository.save(user);
     UserStatus userStatus = new UserStatus(user);
-    userStatusRepository.save(userStatus);
     user.updateStatus(userStatus);
+
+    userRepository.save(user);
 
     return toDto(user, userStatus);
   }
@@ -57,18 +62,18 @@ public class BasicUserService implements UserService {
   public UserDto findById(UUID id) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
-    UserStatus status = userStatusRepository.findByUserId(id).orElse(null);
-    return toDto(user, status);
+    return toDto(user, user.getStatus());
   }
 
   @Override
   public List<UserDto> findAll() {
     return userRepository.findAll().stream()
-        .map(user -> toDto(user, userStatusRepository.findByUserId(user.getId()).orElse(null)))
+        .map(user -> toDto(user, user.getStatus()))
         .collect(Collectors.toList());
   }
 
   @Override
+  @Transactional
   public void update(UUID id, UserUpdateRequest request, MultipartFile profile) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
@@ -77,12 +82,8 @@ public class BasicUserService implements UserService {
     }
     try {
       if (profile != null && !profile.isEmpty()) {
-        if (user.getProfile() != null) {
-          binaryContentRepository.delete(user.getProfile().getId());
-        }
         BinaryContent newProfile = new BinaryContent(profile.getBytes(),
             profile.getOriginalFilename(), profile.getSize(), profile.getContentType());
-        binaryContentRepository.save(newProfile);
         user.updateProfile(newProfile);
       }
     } catch (IOException e) {
@@ -92,15 +93,9 @@ public class BasicUserService implements UserService {
   }
 
   @Override
+  @Transactional
   public void delete(UUID id) {
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
-
-    userStatusRepository.deleteByUserId(user.getId());
-    if (user.getProfile() != null) {
-      binaryContentRepository.delete(user.getProfile().getId());
-    }
-    userRepository.delete(id);
+    userRepository.deleteById(id);
   }
 
   @Override
@@ -111,9 +106,7 @@ public class BasicUserService implements UserService {
     if (!user.getPassword().equals(request.password())) {
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
     }
-    UserStatus status = userStatusRepository.findByUserId(
-        user.getId()).orElse(null);
-    return toDto(user, status);
+    return toDto(user, user.getStatus());
   }
 
   private UserDto toDto(User user, UserStatus status) {

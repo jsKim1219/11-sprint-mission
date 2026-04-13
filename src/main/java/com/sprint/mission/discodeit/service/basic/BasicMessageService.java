@@ -7,31 +7,31 @@ import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
 import java.io.IOException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BasicMessageService implements MessageService {
 
   private final MessageRepository messageRepository;
   private final UserRepository userRepository;
   private final ChannelRepository channelRepository;
-  private final BinaryContentRepository binaryContentRepository;
 
   @Override
+  @Transactional
   public MessageDto create(MessageCreateRequest request, List<MultipartFile> attachments) {
     User author = userRepository.findById(request.authorId())
         .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지  않습니다."));
@@ -46,7 +46,6 @@ public class BasicMessageService implements MessageService {
         try {
           BinaryContent content = new BinaryContent(file.getBytes(),
               file.getOriginalFilename(), file.getSize(), file.getContentType());
-          binaryContentRepository.save(content);
           attachmentContents.add(content);
         } catch (IOException e) {
           throw new RuntimeException("파일 처리 중 오류 발생", e);
@@ -72,23 +71,17 @@ public class BasicMessageService implements MessageService {
   }
 
   @Override
+  @Transactional
   public void update(UUID id, MessageUpdateRequest request) {
     Message message = messageRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
     message.update(request.newContent());
-    messageRepository.save(message);
   }
 
   @Override
+  @Transactional
   public void delete(UUID id) {
-    Message message = messageRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
-    if (message.getAttachments() != null) {
-      for (BinaryContent attachment : message.getAttachments()) {
-        binaryContentRepository.delete(attachment.getId());
-      }
-    }
-    messageRepository.delete(id);
+    messageRepository.deleteById(id);
   }
 
   private MessageDto toDto(Message message) {

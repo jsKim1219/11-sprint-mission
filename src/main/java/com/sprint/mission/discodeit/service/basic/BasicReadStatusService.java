@@ -10,15 +10,16 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ReadStatusService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BasicReadStatusService implements ReadStatusService {
 
   private final ReadStatusRepository readStatusRepository;
@@ -26,6 +27,7 @@ public class BasicReadStatusService implements ReadStatusService {
   private final ChannelRepository channelRepository;
 
   @Override
+  @Transactional
   public ReadStatusDto create(ReadStatusCreateRequest request) {
     User user = userRepository.findById(request.userId())
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
@@ -54,17 +56,18 @@ public class BasicReadStatusService implements ReadStatusService {
   }
 
   @Override
+  @Transactional
   public ReadStatusDto update(UUID id, ReadStatusUpdateRequest request) {
     ReadStatus readStatus = readStatusRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("정보를 찾을 수 없습니다."));
     readStatus.update(request.newLastReadAt());
-    readStatusRepository.save(readStatus);
     return toDto(readStatus);
   }
 
   @Override
+  @Transactional
   public void delete(UUID id) {
-    readStatusRepository.delete(id);
+    readStatusRepository.deleteById(id);
   }
 
   private ReadStatusDto toDto(ReadStatus readStatus) {
