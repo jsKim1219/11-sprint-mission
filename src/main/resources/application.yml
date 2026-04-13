@@ -16,6 +16,7 @@ spring:
         highlight_sql: true
 
 discodeit:
-  repository:
-    type: file
-    file-directory: .discodeit
+  storage:
+    type: local
+    local:
+      root-path: ./uploads
