@@ -7,6 +7,7 @@ import com.sprint.mission.discodeit.dto.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.UserService;
@@ -26,6 +27,7 @@ public class BasicUserService implements UserService {
 
   private final UserRepository userRepository;
   private final BinaryContentRepository binaryContentRepository;
+  private final UserMapper userMapper;
 
   @Override
   @Transactional
@@ -55,20 +57,20 @@ public class BasicUserService implements UserService {
 
     userRepository.save(user);
 
-    return toDto(user, userStatus);
+    return userMapper.toDto(user);
   }
 
   @Override
   public UserDto findById(UUID id) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
-    return toDto(user, user.getStatus());
+    return userMapper.toDto(user);
   }
 
   @Override
   public List<UserDto> findAll() {
     return userRepository.findAll().stream()
-        .map(user -> toDto(user, user.getStatus()))
+        .map(userMapper::toDto)
         .collect(Collectors.toList());
   }
 
@@ -89,7 +91,6 @@ public class BasicUserService implements UserService {
     } catch (IOException e) {
       throw new RuntimeException("파일 처리 중 오류가 발생했습니다.", e);
     }
-    userRepository.save(user);
   }
 
   @Override
@@ -106,16 +107,6 @@ public class BasicUserService implements UserService {
     if (!user.getPassword().equals(request.password())) {
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
     }
-    return toDto(user, user.getStatus());
-  }
-
-  private UserDto toDto(User user, UserStatus status) {
-    boolean isOnline = (status != null) && status.isOnline();
-    UUID profileId = user.getProfile() != null ? user.getProfile().getId() : null;
-
-    return new UserDto(
-        user.getId(), user.getCreatedAt(), user.getUpdatedAt(),
-        user.getUsername(), user.getEmail(), profileId, isOnline
-    );
+    return userMapper.toDto(user);
   }
 }

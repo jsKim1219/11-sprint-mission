@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.dto.UserStatusDto;
 import com.sprint.mission.discodeit.dto.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.mapper.UserStatusMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserStatusService;
@@ -22,6 +23,7 @@ public class BasicUserStatusService implements UserStatusService {
 
   private final UserStatusRepository userStatusRepository;
   private final UserRepository userRepository;
+  private final UserStatusMapper userStatusMapper;
 
   @Override
   @Transactional
@@ -33,20 +35,20 @@ public class BasicUserStatusService implements UserStatusService {
     }
     UserStatus userStatus = new UserStatus(user);
     userStatusRepository.save(userStatus);
-    return toDto(userStatus);
+    return userStatusMapper.toDto(userStatus);
   }
 
   @Override
   public UserStatusDto findById(UUID id) {
-    UserStatus userStatus = userStatusRepository.findByUserId(id).orElseThrow(
+    UserStatus userStatus = userStatusRepository.findById(id).orElseThrow(
         () -> new IllegalArgumentException("상태 정보를 찾을 수 없습니다."));
-    return toDto(userStatus);
+    return userStatusMapper.toDto(userStatus);
   }
 
   @Override
   public List<UserStatusDto> findAll() {
     return userStatusRepository.findAll().stream().
-        map(this::toDto).collect(Collectors.toList());
+        map(userStatusMapper::toDto).collect(Collectors.toList());
   }
 
   @Override
@@ -69,11 +71,5 @@ public class BasicUserStatusService implements UserStatusService {
   @Transactional
   public void delete(UUID id) {
     userStatusRepository.deleteById(id);
-  }
-
-  private UserStatusDto toDto(UserStatus userStatus) {
-    return new UserStatusDto(userStatus.getId(), userStatus.getUser().getId(),
-        userStatus.getCreatedAt(), userStatus.getUpdatedAt(),
-        userStatus.getLastActiveAt(), userStatus.isOnline());
   }
 }

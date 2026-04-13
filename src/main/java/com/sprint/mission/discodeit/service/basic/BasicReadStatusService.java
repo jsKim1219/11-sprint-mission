@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.dto.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.mapper.ReadStatusMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -25,6 +26,7 @@ public class BasicReadStatusService implements ReadStatusService {
   private final ReadStatusRepository readStatusRepository;
   private final UserRepository userRepository;
   private final ChannelRepository channelRepository;
+  private final ReadStatusMapper readStatusMapper;
 
   @Override
   @Transactional
@@ -39,20 +41,20 @@ public class BasicReadStatusService implements ReadStatusService {
     }
     ReadStatus readStatus = new ReadStatus(user, channel, request.lastReadAt());
     readStatusRepository.save(readStatus);
-    return toDto(readStatus);
+    return readStatusMapper.toDto(readStatus);
   }
 
   @Override
   public ReadStatusDto findById(UUID id) {
     ReadStatus readStatus = readStatusRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("정보를 찾을 수 없습니다."));
-    return toDto(readStatus);
+    return readStatusMapper.toDto(readStatus);
   }
 
   @Override
   public List<ReadStatusDto> findAllByUserId(UUID userId) {
     return readStatusRepository.findByUserId(userId).stream().
-        map(this::toDto).collect(Collectors.toList());
+        map(readStatusMapper::toDto).collect(Collectors.toList());
   }
 
   @Override
@@ -61,18 +63,12 @@ public class BasicReadStatusService implements ReadStatusService {
     ReadStatus readStatus = readStatusRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("정보를 찾을 수 없습니다."));
     readStatus.update(request.newLastReadAt());
-    return toDto(readStatus);
+    return readStatusMapper.toDto(readStatus);
   }
 
   @Override
   @Transactional
   public void delete(UUID id) {
     readStatusRepository.deleteById(id);
-  }
-
-  private ReadStatusDto toDto(ReadStatus readStatus) {
-    return new ReadStatusDto(readStatus.getId(), readStatus.getUser().getId(),
-        readStatus.getChannel().getId(), readStatus.getCreatedAt(),
-        readStatus.getUpdatedAt(), readStatus.getLastReadAt());
   }
 }

@@ -7,6 +7,7 @@ import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.mapper.MessageMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -29,6 +30,7 @@ public class BasicMessageService implements MessageService {
   private final MessageRepository messageRepository;
   private final UserRepository userRepository;
   private final ChannelRepository channelRepository;
+  private final MessageMapper messageMapper;
 
   @Override
   @Transactional
@@ -54,20 +56,20 @@ public class BasicMessageService implements MessageService {
       message.setAttachments(attachmentContents);
     }
     messageRepository.save(message);
-    return toDto(message);
+    return messageMapper.toDto(message);
   }
 
   @Override
   public MessageDto findById(UUID id) {
     Message message = messageRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
-    return toDto(message);
+    return messageMapper.toDto(message);
   }
 
   @Override
   public List<MessageDto> findAllByChannelId(UUID channelId) {
     return messageRepository.findByChannelId(channelId).stream().
-        map(this::toDto).collect(Collectors.toList());
+        map(messageMapper::toDto).collect(Collectors.toList());
   }
 
   @Override
@@ -82,14 +84,5 @@ public class BasicMessageService implements MessageService {
   @Transactional
   public void delete(UUID id) {
     messageRepository.deleteById(id);
-  }
-
-  private MessageDto toDto(Message message) {
-    List<UUID> attachmentIds = message.getAttachments().stream().map(BinaryContent::getId)
-        .collect(Collectors.toList());
-
-    return new MessageDto(message.getId(), message.getAuthor().getId(),
-        message.getChannel().getId(), message.getContent(), attachmentIds,
-        message.getCreatedAt(), message.getUpdatedAt());
   }
 }
