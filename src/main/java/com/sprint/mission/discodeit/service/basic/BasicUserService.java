@@ -11,6 +11,7 @@ import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class BasicUserService implements UserService {
   private final UserRepository userRepository;
   private final BinaryContentRepository binaryContentRepository;
   private final UserMapper userMapper;
+  private final BinaryContentStorage binaryContentStorage;
 
   @Override
   @Transactional
@@ -43,9 +45,13 @@ public class BasicUserService implements UserService {
 
     try {
       if (profile != null && !profile.isEmpty()) {
-        BinaryContent profileImage = new BinaryContent(profile.getBytes(),
+        BinaryContent profileImage = new BinaryContent(
             profile.getOriginalFilename(), profile.getSize(), profile.getContentType());
+
         binaryContentRepository.save(profileImage);
+
+        binaryContentStorage.put(profileImage.getId(), profile.getBytes());
+
         user.updateProfile(profileImage);
       }
     } catch (IOException e) {
@@ -84,8 +90,11 @@ public class BasicUserService implements UserService {
     }
     try {
       if (profile != null && !profile.isEmpty()) {
-        BinaryContent newProfile = new BinaryContent(profile.getBytes(),
+        BinaryContent newProfile = new BinaryContent(
             profile.getOriginalFilename(), profile.getSize(), profile.getContentType());
+        
+        binaryContentStorage.put(newProfile.getId(), profile.getBytes());
+
         user.updateProfile(newProfile);
       }
     } catch (IOException e) {

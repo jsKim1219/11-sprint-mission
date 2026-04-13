@@ -12,6 +12,7 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
+import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class BasicMessageService implements MessageService {
   private final UserRepository userRepository;
   private final ChannelRepository channelRepository;
   private final MessageMapper messageMapper;
+  private final BinaryContentStorage binaryContentStorage;
 
   @Override
   @Transactional
@@ -46,9 +48,12 @@ public class BasicMessageService implements MessageService {
       List<BinaryContent> attachmentContents = new ArrayList<>();
       for (MultipartFile file : attachments) {
         try {
-          BinaryContent content = new BinaryContent(file.getBytes(),
+          BinaryContent content = new BinaryContent(
               file.getOriginalFilename(), file.getSize(), file.getContentType());
+
           attachmentContents.add(content);
+
+          binaryContentStorage.put(content.getId(), file.getBytes());
         } catch (IOException e) {
           throw new RuntimeException("파일 처리 중 오류 발생", e);
         }

@@ -11,13 +11,12 @@ public class BinaryContentMapper {
     if (binaryContent == null) {
       return null;
     }
-    
+
     return new BinaryContentDto(
         binaryContent.getId(),
         binaryContent.getFileName(),
         binaryContent.getSize(),
-        binaryContent.getContentType(),
-        binaryContent.getBytes()
+        binaryContent.getContentType()
     );
   }
 }
