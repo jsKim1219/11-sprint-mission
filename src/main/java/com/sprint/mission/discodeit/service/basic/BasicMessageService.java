@@ -16,10 +16,12 @@ import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -76,11 +78,27 @@ public class BasicMessageService implements MessageService {
   }
 
   @Override
-  public PageResponse<MessageDto> findAllByChannelId(UUID channelId, Pageable pageable) {
-    Slice<MessageDto> slice = messageRepository
-        .findByChannelIdOrderByCreatedAtDesc(channelId, pageable)
-        .map(messageMapper::toDto);
-    return pageResponseMapper.fromSlice(slice);
+  public PageResponse<MessageDto> findAllByChannelId(UUID channelId, String cursor, int size) {
+    PageRequest pageRequest = PageRequest.of(0, size);
+    Slice<Message> slice;
+
+    if (cursor == null || cursor.isBlank()) {
+      slice = messageRepository.findByChannelIdOrderByCreatedAtDesc(channelId, pageRequest);
+    } else {
+      Instant cursorTime = Instant.parse(cursor);
+      slice = messageRepository.findByChannelIdAndCreatedAtLessThanOrderByCreatedAtDesc(
+          channelId, cursorTime, pageRequest);
+    }
+
+    Slice<MessageDto> dtoSlice = slice.map(messageMapper::toDto);
+    String nextCursor = null;
+
+    if (slice.hasNext() && !slice.getContent().isEmpty()) {
+      List<Message> messages = slice.getContent();
+      nextCursor = messages.get(messages.size() - 1).getCreatedAt().toString();
+    }
+
+    return pageResponseMapper.fromSlice(dtoSlice, nextCursor);
   }
 
   @Override

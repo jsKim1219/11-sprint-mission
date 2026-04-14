@@ -44,8 +44,8 @@ public class MessageController {
   @GetMapping
   public PageResponse<MessageDto> getMessageByChannelId(
       @RequestParam("channelId") UUID channelId,
-      @PageableDefault(size = 50, sort = "createdAt",
-          direction = Direction.DESC) Pageable pageable) {
-    return messageService.findAllByChannelId(channelId, pageable);
+      @RequestParam(value = "cursor", required = false) String cursor,
+      @RequestParam(value = "size", defaultValue = "50") int size) {
+    return messageService.findAllByChannelId(channelId, cursor, size);
   }
 }
