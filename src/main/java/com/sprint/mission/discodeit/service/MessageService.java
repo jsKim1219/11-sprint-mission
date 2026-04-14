@@ -3,9 +3,10 @@ package com.sprint.mission.discodeit.service;
 import com.sprint.mission.discodeit.dto.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.MessageDto;
 import com.sprint.mission.discodeit.dto.MessageUpdateRequest;
-
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface MessageService {
@@ -14,7 +15,7 @@ public interface MessageService {
 
   MessageDto findById(UUID id);
 
-  List<MessageDto> findAllByChannelId(UUID channelId);
+  Slice<MessageDto> findAllByChannelId(UUID channelId, Pageable pageable);
 
   void update(UUID id, MessageUpdateRequest request);
 

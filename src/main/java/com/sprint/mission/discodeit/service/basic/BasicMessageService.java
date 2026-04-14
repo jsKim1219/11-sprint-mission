@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,9 +74,9 @@ public class BasicMessageService implements MessageService {
   }
 
   @Override
-  public List<MessageDto> findAllByChannelId(UUID channelId) {
-    return messageRepository.findByChannelId(channelId).stream().
-        map(messageMapper::toDto).collect(Collectors.toList());
+  public Slice<MessageDto> findAllByChannelId(UUID channelId, Pageable pageable) {
+    return messageRepository.findByChannelIdOrderByCreatedAtDesc(channelId, pageable)
+        .map(messageMapper::toDto);
   }
 
   @Override

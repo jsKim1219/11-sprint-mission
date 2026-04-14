@@ -5,6 +5,11 @@ import com.sprint.mission.discodeit.dto.MessageDto;
 import com.sprint.mission.discodeit.dto.MessageUpdateRequest;
 import com.sprint.mission.discodeit.service.MessageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +41,10 @@ public class MessageController {
   }
 
   @GetMapping
-  public List<MessageDto> getMessageByChannelId(@RequestParam("channelId") UUID channelId) {
-    return messageService.findAllByChannelId(channelId);
+  public Slice<MessageDto> getMessageByChannelId(
+      @RequestParam("channelId") UUID channelId,
+      @PageableDefault(size = 50, sort = "createdAt",
+          direction = Direction.DESC) Pageable pageable) {
+    return messageService.findAllByChannelId(channelId, pageable);
   }
 }
