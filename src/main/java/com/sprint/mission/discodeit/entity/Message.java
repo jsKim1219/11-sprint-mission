@@ -15,6 +15,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Table(name = "messages")
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Message extends BaseUpdatableEntity {
 
+  @BatchSize(size = 100)
   @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinTable(name = "message_attachments",
       joinColumns = @JoinColumn(name = "message_id"),

@@ -13,6 +13,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Table(name = "channels")
@@ -30,9 +31,11 @@ public class Channel extends BaseUpdatableEntity {
   @Column(length = 500)
   private String description;
 
+  @BatchSize(size = 100)
   @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Message> messages = new ArrayList<>();
 
+  @BatchSize(size = 100)
   @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ReadStatus> readStatuses = new ArrayList<>();
 
