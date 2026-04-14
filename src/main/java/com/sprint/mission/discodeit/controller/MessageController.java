@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.controller;
 import com.sprint.mission.discodeit.dto.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.MessageDto;
 import com.sprint.mission.discodeit.dto.MessageUpdateRequest;
+import com.sprint.mission.discodeit.dto.response.PageResponse;
 import com.sprint.mission.discodeit.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +42,7 @@ public class MessageController {
   }
 
   @GetMapping
-  public Slice<MessageDto> getMessageByChannelId(
+  public PageResponse<MessageDto> getMessageByChannelId(
       @RequestParam("channelId") UUID channelId,
       @PageableDefault(size = 50, sort = "createdAt",
           direction = Direction.DESC) Pageable pageable) {

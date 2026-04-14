@@ -22,7 +22,7 @@ public class PageResponseMapper {
     );
   }
 
-  public <T> PageResponse<T> fromSlice(Page<T> page) {
+  public <T> PageResponse<T> fromPage(Page<T> page) {
     if (page == null) {
       return null;
     }
