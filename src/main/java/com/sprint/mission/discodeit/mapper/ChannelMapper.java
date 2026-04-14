@@ -10,42 +10,45 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
-public class ChannelMapper {
+@Mapper(componentModel = "spring", uses = {UserMapper.class})
+public abstract class ChannelMapper {
 
-  private final UserMapper userMapper;
+  @Autowired
+  protected UserMapper userMapper;
 
-  public ChannelDto toDto(Channel channel) {
+  @Mapping(target = "participants", source = ".", qualifiedByName = "mapParticipants")
+  @Mapping(target = "lastMessageAt", source = ".", qualifiedByName = "mapLastMessageAt")
+  public abstract ChannelDto toDto(Channel channel);
+
+  @Named("mapParticipants")
+  protected List<UserDto> mapParticipants(Channel channel) {
     if (channel == null) {
       return null;
     }
 
-    Instant lastMessageAt = null;
-    if (channel.getMessages() != null) {
-      lastMessageAt = channel.getMessages().stream().map(Message::getCreatedAt)
-          .max(Instant::compareTo).orElse(null);
-    }
-
-    List<UserDto> participants = null;
-    if (channel.getType() == ChannelType.PRIVATE &&
-        channel.getReadStatuses() != null) {
-      participants = channel.getReadStatuses().stream()
-          .map(readStatus -> userMapper.toDto(
-              readStatus.getUser())).collect(Collectors.toList());
+    if (channel.getType() == ChannelType.PRIVATE && channel.getReadStatuses() != null) {
+      return channel.getReadStatuses().stream()
+          .map(readStatus -> userMapper.toDto(readStatus.getUser()))
+          .collect(Collectors.toList());
     } else if (channel.getType() == ChannelType.PUBLIC) {
-      participants = Collections.emptyList();
+      return Collections.emptyList();
+    }
+    return null;
+  }
+
+  @Named("mapLastMessageAt")
+  protected Instant mapLastMessageAt(Channel channel) {
+    if (channel == null || channel.getMessages() == null) {
+      return null;
     }
 
-    return new ChannelDto(
-        channel.getId(),
-        channel.getType(),
-        channel.getName(),
-        channel.getDescription(),
-        participants,
-        lastMessageAt
-    );
+    return channel.getMessages().stream().map(Message::getCreatedAt)
+        .max(Instant::compareTo).orElse(null);
   }
 }
