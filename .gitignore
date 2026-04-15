@@ -41,3 +41,5 @@ out/
 .postman
 
 .DS_Store
+
+uploads/
