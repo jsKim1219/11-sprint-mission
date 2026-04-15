@@ -82,7 +82,7 @@ public class BasicUserService implements UserService {
 
   @Override
   @Transactional
-  public void update(UUID id, UserUpdateRequest request, MultipartFile profile) {
+  public UserDto update(UUID id, UserUpdateRequest request, MultipartFile profile) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
     if (request.newUsername() != null) {
@@ -92,7 +92,7 @@ public class BasicUserService implements UserService {
       if (profile != null && !profile.isEmpty()) {
         BinaryContent newProfile = new BinaryContent(
             profile.getOriginalFilename(), profile.getSize(), profile.getContentType());
-        
+
         binaryContentStorage.put(newProfile.getId(), profile.getBytes());
 
         user.updateProfile(newProfile);
@@ -100,6 +100,7 @@ public class BasicUserService implements UserService {
     } catch (IOException e) {
       throw new RuntimeException("파일 처리 중 오류가 발생했습니다.", e);
     }
+    return userMapper.toDto(user);
   }
 
   @Override

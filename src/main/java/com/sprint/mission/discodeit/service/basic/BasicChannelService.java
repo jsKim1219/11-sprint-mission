@@ -75,13 +75,14 @@ public class BasicChannelService implements ChannelService {
 
   @Override
   @Transactional
-  public void update(UUID id, ChannelUpdateRequest request) {
+  public ChannelDto update(UUID id, ChannelUpdateRequest request) {
     Channel channel = channelRepository.findById(id).
         orElseThrow(() -> new IllegalArgumentException("채널을 찾을 수 없습니다."));
     if (channel.getType() == ChannelType.PRIVATE) {
       throw new IllegalArgumentException("프라이빗 채널을 수정할 수 없습니다.");
     }
     channel.update(request.newName(), request.newDescription());
+    return channelMapper.toDto(channel);
   }
 
   @Override

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,16 +77,15 @@ public class BasicMessageService implements MessageService {
   }
 
   @Override
-  public PageResponse<MessageDto> findAllByChannelId(UUID channelId, String cursor, int size) {
+  public PageResponse<MessageDto> findAllByChannelId(UUID channelId, Instant cursor, int size) {
     PageRequest pageRequest = PageRequest.of(0, size);
     Slice<Message> slice;
 
-    if (cursor == null || cursor.isBlank()) {
+    if (cursor == null) {
       slice = messageRepository.findByChannelIdOrderByCreatedAtDesc(channelId, pageRequest);
     } else {
-      Instant cursorTime = Instant.parse(cursor);
       slice = messageRepository.findByChannelIdAndCreatedAtLessThanOrderByCreatedAtDesc(
-          channelId, cursorTime, pageRequest);
+          channelId, cursor, pageRequest);
     }
 
     Slice<MessageDto> dtoSlice = slice.map(messageMapper::toDto);
@@ -103,10 +101,11 @@ public class BasicMessageService implements MessageService {
 
   @Override
   @Transactional
-  public void update(UUID id, MessageUpdateRequest request) {
+  public MessageDto update(UUID id, MessageUpdateRequest request) {
     Message message = messageRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
     message.update(request.newContent());
+    return messageMapper.toDto(message);
   }
 
   @Override

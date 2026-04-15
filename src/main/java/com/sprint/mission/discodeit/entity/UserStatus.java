@@ -32,8 +32,13 @@ public class UserStatus extends BaseUpdatableEntity {
   }
 
   public boolean isOnline() {
-    return this.getUpdatedAt().isAfter(Instant.now().minus(5,
-        ChronoUnit.MINUTES));
+    Instant targetTime = this.getUpdatedAt() != null ? this.getUpdatedAt() : this.lastActiveAt;
+
+    if (targetTime == null) {
+      return false;
+    }
+
+    return targetTime.isAfter(Instant.now().minus(5, ChronoUnit.MINUTES));
   }
 
   public void update(Instant newLastActiveAt) {

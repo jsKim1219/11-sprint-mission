@@ -61,10 +61,11 @@ public class BasicUserStatusService implements UserStatusService {
 
   @Override
   @Transactional
-  public void updateByUserId(UUID userId, UserStatusUpdateRequest request) {
+  public UserStatusDto updateByUserId(UUID userId, UserStatusUpdateRequest request) {
     UserStatus userStatus = userStatusRepository.findByUserId(userId).orElseThrow(
         () -> new IllegalArgumentException("해당 사용자의 상태 정보를 찾을 수 없습니다."));
     userStatus.update(request.newLastActiveAt());
+    return userStatusMapper.toDto(userStatus);
   }
 
   @Override
