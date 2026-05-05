@@ -28,7 +28,7 @@ public class BasicBinaryContentService implements BinaryContentService {
   public BinaryContentDto create(BinaryContentCreateRequest request) {
     BinaryContent binaryContent = new BinaryContent(
         request.fileName(), request.size(), request.contentType());
-    
+
     binaryContentRepository.save(binaryContent);
 
     binaryContentStorage.put(binaryContent.getId(), request.bytes());
@@ -53,5 +53,7 @@ public class BasicBinaryContentService implements BinaryContentService {
   @Transactional
   public void delete(UUID id) {
     binaryContentRepository.deleteById(id);
+
+    binaryContentStorage.delete(id);
   }
 }

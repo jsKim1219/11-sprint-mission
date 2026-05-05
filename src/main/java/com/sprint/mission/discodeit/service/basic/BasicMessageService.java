@@ -89,11 +89,11 @@ public class BasicMessageService implements MessageService {
     }
 
     Slice<MessageDto> dtoSlice = slice.map(messageMapper::toDto);
-    String nextCursor = null;
+    Instant nextCursor = null;
 
     if (slice.hasNext() && !slice.getContent().isEmpty()) {
       List<Message> messages = slice.getContent();
-      nextCursor = messages.get(messages.size() - 1).getCreatedAt().toString();
+      nextCursor = messages.get(messages.size() - 1).getCreatedAt();
     }
 
     return pageResponseMapper.fromSlice(dtoSlice, nextCursor);

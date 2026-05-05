@@ -1,0 +1,13 @@
+#개발 환결 설정
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/discodeit
+    username: postgres
+    password: mypassword
+
+logging:
+  level:
+    com.sprint.mission.discodeit: debug

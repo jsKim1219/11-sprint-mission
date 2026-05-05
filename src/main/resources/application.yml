@@ -1,11 +1,10 @@
+#공통설정
 spring:
   application:
     name: discodeit
-  datasource:
-    url: jdbc:postgresql://localhost:5432/discodeit
-    username: postgres
-    password: mypassword
     driver-class-name: org.postgresql.Driver
+  profiles:
+    active: dev
   jpa:
     hibernate:
       ddl-auto: validate
@@ -13,11 +12,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        highlight_sql: true
-    open-in-view: false
 
-discodeit:
-  storage:
-    type: local
-    local:
-      root-path: ./uploads
+logging:
+  level:
+    root: info
