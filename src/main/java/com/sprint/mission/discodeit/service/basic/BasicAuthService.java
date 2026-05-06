@@ -7,9 +7,11 @@ import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -21,8 +23,12 @@ public class BasicAuthService implements AuthService {
   @Override
   public UserDto login(UserLoginRequest request) {
     User user = userRepository.findByUsername(request.username()).
-        orElseThrow(() -> new IllegalArgumentException("일치하는 유저가 없습니다."));
+        orElseThrow(() -> {
+          log.warn("로그인 실패(존재하지 않는 유저) - username: {}", request.username());
+          return new IllegalArgumentException("일치하는 유저가 없습니다.");
+        });
     if (!user.getPassword().equals(request.password())) {
+      log.warn("로그인 실패(비밀번호 불일치) - username: {}", request.username());
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
     }
     return userMapper.toDto(user);

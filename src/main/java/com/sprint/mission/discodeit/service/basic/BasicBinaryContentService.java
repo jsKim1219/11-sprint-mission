@@ -46,7 +46,10 @@ public class BasicBinaryContentService implements BinaryContentService {
   public BinaryContentDto findById(UUID id) {
     log.debug("파일 조회 시작 - fileId: {}", id);
     BinaryContent binaryContent = binaryContentRepository.findById(id).orElseThrow(
-        () -> new IllegalArgumentException("파일을 찾을 수 없습니다."));
+        () -> {
+          log.warn("파일 조회 실패(존재하지 않는 파일) - fileId: {}", id);
+          return new IllegalArgumentException("파일을 찾을 수 없습니다.");
+        });
     log.info("파일 조회 완료 - fileId: {}", id);
     return binaryContentMapper.toDto(binaryContent);
   }

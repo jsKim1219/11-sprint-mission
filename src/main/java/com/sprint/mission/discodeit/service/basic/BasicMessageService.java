@@ -47,9 +47,15 @@ public class BasicMessageService implements MessageService {
     log.debug("메시지 생성 시작 - channelId: {}, authorId: {}", request.channelId(), request.authorId());
 
     User author = userRepository.findById(request.authorId())
-        .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지  않습니다."));
+        .orElseThrow(() -> {
+          log.warn("메시지 생성 실패(존재하지 않는 유저) - authorId: {}", request.authorId());
+          return new IllegalArgumentException("유저가 존재하지  않습니다.");
+        });
     Channel channel = channelRepository.findById(request.channelId())
-        .orElseThrow(() -> new IllegalArgumentException("채널이 존재하지 않습니다."));
+        .orElseThrow(() -> {
+          log.warn("메시지 생성 실패(존재하지 않는 채널) - channelId: {}", request.channelId());
+          return new IllegalArgumentException("채널이 존재하지 않습니다.");
+        });
 
     Message message = new Message(request.content(), author, channel);
 
@@ -64,6 +70,7 @@ public class BasicMessageService implements MessageService {
 
           binaryContentStorage.put(content.getId(), file.getBytes());
         } catch (IOException e) {
+          log.error("메시지 첨부파일 처리 중 IO 오류 발생", e);
           throw new RuntimeException("파일 처리 중 오류 발생", e);
         }
       }
@@ -78,7 +85,10 @@ public class BasicMessageService implements MessageService {
   @Override
   public MessageDto findById(UUID id) {
     Message message = messageRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
+        .orElseThrow(() -> {
+          log.warn("메시지 조회 실패(존재하지 않는 메시지) - messageId: {}", id);
+          return new IllegalArgumentException("메시지를 찾을 수 없습니다.");
+        });
     return messageMapper.toDto(message);
   }
 
@@ -110,7 +120,10 @@ public class BasicMessageService implements MessageService {
   public MessageDto update(UUID id, MessageUpdateRequest request) {
     log.debug("메시지 수정 시작 - messageId: {}", id);
     Message message = messageRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
+        .orElseThrow(() -> {
+          log.warn("메시지 수정 실패(존재하지 않는 메시지) - messageId: {}", id);
+          return new IllegalArgumentException("메시지를 찾을 수 없습니다.");
+        });
     message.update(request.newContent());
     log.info("메시지 수정 완료 - messageId: {}", id);
     return messageMapper.toDto(message);

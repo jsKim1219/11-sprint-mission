@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Tag(name = "Message")
 @RestController
 @RequestMapping("/api/messages")
@@ -45,20 +47,28 @@ public class MessageController {
   public MessageDto sendMessage(
       @RequestPart("messageCreateRequest") MessageCreateRequest request,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments) {
-    return messageService.create(request, attachments);
+    log.debug("POST /api/messages 요청 - channelId: {}", request.channelId());
+    MessageDto response = messageService.create(request, attachments);
+    log.info("POST /api/messages 정상 처리 완료 - messageId: {}", response.id());
+    return response;
   }
 
   @PatchMapping("/{messageId}")
   public MessageDto updateMessage(@PathVariable UUID messageId,
       @RequestBody MessageUpdateRequest request) {
-    return messageService.update(messageId, request);
+    log.debug("PATCH /api/messages/{} 요청", messageId);
+    MessageDto response = messageService.update(messageId, request);
+    log.info("PATHC /api/messages/{} 정상 처리 완료", messageId);
+    return response;
   }
 
   @ApiResponse(responseCode = "204", description = "Message가 성공적으로 삭제됨")
   @DeleteMapping("/{messageId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteMessage(@PathVariable UUID messageId) {
+    log.debug("DELETE /api/messages/{} 요청", messageId);
     messageService.delete(messageId);
+    log.info("DELETE /api/messages/{} 정상 처리 완료", messageId);
   }
 
   @GetMapping

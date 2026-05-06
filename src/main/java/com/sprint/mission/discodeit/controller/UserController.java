@@ -10,6 +10,7 @@ import com.sprint.mission.discodeit.service.UserStatusService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Tag(name = "User")
 @RestController
 @RequestMapping("/api/users")
@@ -33,7 +35,10 @@ public class UserController {
   public UserDto registerUser(
       @RequestPart("userCreateRequest") UserCreateRequest request,
       @RequestPart(value = "profile", required = false) MultipartFile profile) {
-    return userService.create(request, profile);
+    log.debug("POST /api/users 요청 - username: {}", request.username());
+    UserDto response = userService.create(request, profile);
+    log.info("POST /api/users 정상 처리 완료 - userId: {}", response.id());
+    return response;
   }
 
   @PatchMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -41,14 +46,19 @@ public class UserController {
       @PathVariable UUID userId,
       @RequestPart("userUpdateRequest") UserUpdateRequest request,
       @RequestPart(value = "profile", required = false) MultipartFile profile) {
-    return userService.update(userId, request, profile);
+    log.debug("PATCH /api/users/{} 요청", userId);
+    UserDto response = userService.update(userId, request, profile);
+    log.info("PATCH /api/users/{} 정상 처리 완료", userId);
+    return response;
   }
 
   @ApiResponse(responseCode = "204", description = "User가 성공적으로 삭제됨")
   @DeleteMapping("/{userId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteUser(@PathVariable UUID userId) {
+    log.debug("DELETE /api/users/{} 요청", userId);
     userService.delete(userId);
+    log.info("DELETE /api/users/{} 정상 처리 완료", userId);
   }
 
   @GetMapping
