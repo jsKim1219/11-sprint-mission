@@ -6,6 +6,8 @@ import com.sprint.mission.discodeit.dto.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.exception.channel.ChannelNotFoundException;
+import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.ReadStatusMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
@@ -36,13 +38,13 @@ public class BasicReadStatusService implements ReadStatusService {
     User user = userRepository.findById(request.userId())
         .orElseThrow(() -> {
           log.warn("읽음 상태 생성 실패(존재하지 않는 유저) - userId: {}", request.userId());
-          return new IllegalArgumentException("존재하지 않는 사용자입니다.");
+          return new UserNotFoundException(request.userId());
         });
 
     Channel channel = channelRepository.findById(request.channelId())
         .orElseThrow(() -> {
           log.warn("읽음 상태 생성 실패(존재하지 않는 채널) - channelId: {}", request.channelId());
-          return new IllegalArgumentException("존재하지 않는 채널입니다.");
+          return new ChannelNotFoundException(request.channelId());
         });
 
     if (readStatusRepository.existsByUserIdAndChannelId(request.userId(), request.channelId())) {

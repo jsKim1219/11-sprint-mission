@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.dto.UserStatusDto;
 import com.sprint.mission.discodeit.dto.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserStatusMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
@@ -33,7 +34,7 @@ public class BasicUserStatusService implements UserStatusService {
     User user = userRepository.findById(request.userId())
         .orElseThrow(() -> {
           log.warn("상태 생성 실패(존재하지 않는 유저) - userId: {}", request.userId());
-          return new IllegalArgumentException("존재하지 않는 사용자입니다.");
+          return new UserNotFoundException(request.userId());
         });
     if (userStatusRepository.existsByUserId(request.userId())) {
       log.warn("상태 생성 실패(이미 존재하는 상태) - userId: {}", request.userId());
