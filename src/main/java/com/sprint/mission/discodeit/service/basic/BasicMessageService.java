@@ -21,12 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -42,6 +44,8 @@ public class BasicMessageService implements MessageService {
   @Override
   @Transactional
   public MessageDto create(MessageCreateRequest request, List<MultipartFile> attachments) {
+    log.debug("메시지 생성 시작 - channelId: {}, authorId: {}", request.channelId(), request.authorId());
+
     User author = userRepository.findById(request.authorId())
         .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지  않습니다."));
     Channel channel = channelRepository.findById(request.channelId())
@@ -66,6 +70,8 @@ public class BasicMessageService implements MessageService {
       message.setAttachments(attachmentContents);
     }
     messageRepository.save(message);
+    log.info("메시지 생성 완료 - messageId: {}", message.getId());
+
     return messageMapper.toDto(message);
   }
 
@@ -102,15 +108,19 @@ public class BasicMessageService implements MessageService {
   @Override
   @Transactional
   public MessageDto update(UUID id, MessageUpdateRequest request) {
+    log.debug("메시지 수정 시작 - messageId: {}", id);
     Message message = messageRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다."));
     message.update(request.newContent());
+    log.info("메시지 수정 완료 - messageId: {}", id);
     return messageMapper.toDto(message);
   }
 
   @Override
   @Transactional
   public void delete(UUID id) {
+    log.debug("메시지 삭제 시작 - messageId: {}", id);
     messageRepository.deleteById(id);
+    log.info("메시지 삭제 완료 - messageId: {}", id);
   }
 }

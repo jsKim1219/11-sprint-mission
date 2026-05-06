@@ -17,10 +17,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -34,6 +36,8 @@ public class BasicUserService implements UserService {
   @Override
   @Transactional
   public UserDto create(UserCreateRequest request, MultipartFile profile) {
+    log.debug("사용자 생성 시작 - username: {}, email: {}", request.username(), request.email());
+
     if (userRepository.existsByUsername(request.username())) {
       throw new IllegalArgumentException("이미 사용 중인 이름입니다.");
     }
@@ -62,6 +66,7 @@ public class BasicUserService implements UserService {
     user.updateStatus(userStatus);
 
     userRepository.save(user);
+    log.info("사용자 생성 완료 - userId: {}", user.getId());
 
     return userMapper.toDto(user);
   }
@@ -83,6 +88,8 @@ public class BasicUserService implements UserService {
   @Override
   @Transactional
   public UserDto update(UUID id, UserUpdateRequest request, MultipartFile profile) {
+    log.debug("사용자 수정 시작 - userId: {}", id);
+
     User user = userRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
     if (request.newUsername() != null) {
@@ -100,13 +107,18 @@ public class BasicUserService implements UserService {
     } catch (IOException e) {
       throw new RuntimeException("파일 처리 중 오류가 발생했습니다.", e);
     }
+
+    log.info("사용자 수정 완료 - userId: {}", user.getId());
+
     return userMapper.toDto(user);
   }
 
   @Override
   @Transactional
   public void delete(UUID id) {
+    log.debug("사용자 삭제 시작 - userId: {}", id);
     userRepository.deleteById(id);
+    log.info("사용자 삭제 완료 - userId: {}", id);
   }
 
   @Override
