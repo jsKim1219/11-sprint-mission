@@ -7,6 +7,8 @@ import com.sprint.mission.discodeit.dto.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.exception.user.UserAlreadyExistsException;
+import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -40,11 +42,11 @@ public class BasicUserService implements UserService {
 
     if (userRepository.existsByUsername(request.username())) {
       log.warn("사용자 생성 실패(중복된 이름) - username: {}", request.username());
-      throw new IllegalArgumentException("이미 사용 중인 이름입니다.");
+      throw new UserAlreadyExistsException(request.username());
     }
     if (userRepository.existsByEmail(request.email())) {
       log.warn("사용자 생성 실패(중복된 이메일) - email: {}", request.email());
-      throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+      throw new UserAlreadyExistsException(request.email());
     }
 
     User user = new User(request.username(), request.email(), request.password());
@@ -81,7 +83,7 @@ public class BasicUserService implements UserService {
     User user = userRepository.findById(id)
         .orElseThrow(() -> {
           log.warn("사용자 조회 실패(존재하지 않는 유저) - userId: {}", id);
-          return new IllegalArgumentException("유저를 찾을 수 없습니다.");
+          return new UserNotFoundException(id);
         });
     return userMapper.toDto(user);
   }
@@ -101,7 +103,7 @@ public class BasicUserService implements UserService {
     User user = userRepository.findById(id)
         .orElseThrow(() -> {
           log.warn("사용자 수정 실패(존재하지 않는 유저) - userId: {}", id);
-          return new IllegalArgumentException("유저를 찾을 수 없습니다.");
+          return new UserNotFoundException(id);
         });
     if (request.newUsername() != null) {
       user.update(request.newUsername());

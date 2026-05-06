@@ -8,6 +8,9 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.exception.channel.ChannelNotFoundException;
+import com.sprint.mission.discodeit.exception.channel.PrivateChannelUpdateDeniedException;
+import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.ChannelMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
@@ -54,7 +57,7 @@ public class BasicChannelService implements ChannelService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> {
               log.warn("PRIVATE 채널 생성 실패(참여자에 존재하지 않은 유저 포함) - userId: {}", userId);
-              return new IllegalArgumentException("존재하지 않는 사용자입니다.");
+              return new UserNotFoundException(userId);
             });
         ReadStatus readStatus = new ReadStatus(user, savedChannel, savedChannel.getCreatedAt());
         savedChannel.getReadStatuses().add(readStatus);
@@ -70,7 +73,7 @@ public class BasicChannelService implements ChannelService {
     Channel channel = channelRepository.findById(id).
         orElseThrow(() -> {
           log.warn("채널 조회 실패(존재하지 않은 채널) - channelId: {}", id);
-          return new IllegalArgumentException("채널을 찾을 수 없습니다.");
+          return new ChannelNotFoundException(id);
         });
     return channelMapper.toDto(channel);
   }
@@ -93,12 +96,12 @@ public class BasicChannelService implements ChannelService {
     Channel channel = channelRepository.findById(id).
         orElseThrow(() -> {
           log.warn("채널 수정 실패(존재하지 않은 채널) - channelId: {}", id);
-          return new IllegalArgumentException("채널을 찾을 수 없습니다.");
+          return new ChannelNotFoundException(id);
         });
 
     if (channel.getType() == ChannelType.PRIVATE) {
       log.warn("채널 수정 실패(PRIVATE 채널 수정 시도) - channelId: {}", id);
-      throw new IllegalArgumentException("프라이빗 채널을 수정할 수 없습니다.");
+      throw new PrivateChannelUpdateDeniedException(id);
     }
 
     channel.update(request.newName(), request.newDescription());

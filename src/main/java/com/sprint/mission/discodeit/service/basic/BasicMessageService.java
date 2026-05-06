@@ -8,6 +8,9 @@ import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.exception.channel.ChannelNotFoundException;
+import com.sprint.mission.discodeit.exception.message.MessageNotFoundException;
+import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
 import com.sprint.mission.discodeit.mapper.PageResponseMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
@@ -49,12 +52,12 @@ public class BasicMessageService implements MessageService {
     User author = userRepository.findById(request.authorId())
         .orElseThrow(() -> {
           log.warn("메시지 생성 실패(존재하지 않는 유저) - authorId: {}", request.authorId());
-          return new IllegalArgumentException("유저가 존재하지  않습니다.");
+          return new UserNotFoundException(request.authorId());
         });
     Channel channel = channelRepository.findById(request.channelId())
         .orElseThrow(() -> {
           log.warn("메시지 생성 실패(존재하지 않는 채널) - channelId: {}", request.channelId());
-          return new IllegalArgumentException("채널이 존재하지 않습니다.");
+          return new ChannelNotFoundException(request.channelId());
         });
 
     Message message = new Message(request.content(), author, channel);
@@ -87,7 +90,7 @@ public class BasicMessageService implements MessageService {
     Message message = messageRepository.findById(id)
         .orElseThrow(() -> {
           log.warn("메시지 조회 실패(존재하지 않는 메시지) - messageId: {}", id);
-          return new IllegalArgumentException("메시지를 찾을 수 없습니다.");
+          return new MessageNotFoundException(id);
         });
     return messageMapper.toDto(message);
   }
@@ -122,7 +125,7 @@ public class BasicMessageService implements MessageService {
     Message message = messageRepository.findById(id)
         .orElseThrow(() -> {
           log.warn("메시지 수정 실패(존재하지 않는 메시지) - messageId: {}", id);
-          return new IllegalArgumentException("메시지를 찾을 수 없습니다.");
+          return new MessageNotFoundException(id);
         });
     message.update(request.newContent());
     log.info("메시지 수정 완료 - messageId: {}", id);
