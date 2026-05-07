@@ -7,6 +7,7 @@ import com.sprint.mission.discodeit.dto.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.service.ChannelService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class ChannelController {
   @PostMapping("/public")
   @ResponseStatus(HttpStatus.CREATED)
   public ChannelDto createPublicChannel(
-      @RequestBody PublicChannelCreateRequest request) {
+      @Valid @RequestBody PublicChannelCreateRequest request) {
     log.debug("POST /api/channels/public 요청 - name: {}", request.name());
     ChannelDto response = channelService.createPublic(request);
     log.info("POST /api/channels/public 정상 처리 완료 - channelId: {}", response.id());
@@ -39,7 +40,7 @@ public class ChannelController {
   @PostMapping("/private")
   @ResponseStatus(HttpStatus.CREATED)
   public ChannelDto createPrivateChannel(
-      @RequestBody PrivateChannelCreateRequest request) {
+      @Valid @RequestBody PrivateChannelCreateRequest request) {
     log.debug("POST /api/channels/private 요청");
     ChannelDto response = channelService.createPrivate(request);
     log.info("POST /api/channels/private 정상 처리 완료 - channelId: {}", response.id());
@@ -55,7 +56,7 @@ public class ChannelController {
   @PatchMapping("/{channelId}")
   public ChannelDto updateChannel(
       @PathVariable UUID channelId,
-      @RequestBody ChannelUpdateRequest request) {
+      @Valid @RequestBody ChannelUpdateRequest request) {
     log.debug("PATCH /api/channels/{} 요청", channelId);
     ChannelDto response = channelService.update(channelId, request);
     log.info("PATCH /api/channels/{} 정상 처리 완료", channelId);

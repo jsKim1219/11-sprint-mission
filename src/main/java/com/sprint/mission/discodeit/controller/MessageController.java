@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -45,8 +46,8 @@ public class MessageController {
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public MessageDto sendMessage(
-      @RequestPart("messageCreateRequest") MessageCreateRequest request,
-      @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments) {
+      @Valid @RequestPart("messageCreateRequest") MessageCreateRequest request,
+      @Valid @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments) {
     log.debug("POST /api/messages 요청 - channelId: {}", request.channelId());
     MessageDto response = messageService.create(request, attachments);
     log.info("POST /api/messages 정상 처리 완료 - messageId: {}", response.id());
@@ -55,7 +56,7 @@ public class MessageController {
 
   @PatchMapping("/{messageId}")
   public MessageDto updateMessage(@PathVariable UUID messageId,
-      @RequestBody MessageUpdateRequest request) {
+      @Valid @RequestBody MessageUpdateRequest request) {
     log.debug("PATCH /api/messages/{} 요청", messageId);
     MessageDto response = messageService.update(messageId, request);
     log.info("PATHC /api/messages/{} 정상 처리 완료", messageId);

@@ -9,6 +9,7 @@ import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,8 +34,8 @@ public class UserController {
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
   public UserDto registerUser(
-      @RequestPart("userCreateRequest") UserCreateRequest request,
-      @RequestPart(value = "profile", required = false) MultipartFile profile) {
+      @Valid @RequestPart("userCreateRequest") UserCreateRequest request,
+      @Valid @RequestPart(value = "profile", required = false) MultipartFile profile) {
     log.debug("POST /api/users 요청 - username: {}", request.username());
     UserDto response = userService.create(request, profile);
     log.info("POST /api/users 정상 처리 완료 - userId: {}", response.id());
@@ -44,8 +45,8 @@ public class UserController {
   @PatchMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public UserDto updateUser(
       @PathVariable UUID userId,
-      @RequestPart("userUpdateRequest") UserUpdateRequest request,
-      @RequestPart(value = "profile", required = false) MultipartFile profile) {
+      @Valid @RequestPart("userUpdateRequest") UserUpdateRequest request,
+      @Valid @RequestPart(value = "profile", required = false) MultipartFile profile) {
     log.debug("PATCH /api/users/{} 요청", userId);
     UserDto response = userService.update(userId, request, profile);
     log.info("PATCH /api/users/{} 정상 처리 완료", userId);
