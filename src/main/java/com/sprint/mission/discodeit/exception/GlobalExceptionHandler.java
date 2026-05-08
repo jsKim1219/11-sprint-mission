@@ -36,4 +36,18 @@ public class GlobalExceptionHandler {
     return ResponseEntity.internalServerError()
         .body(new ErrorResponse(500, ex.getClass().getSimpleName(), "서버 오류가 발생했습니다.", Map.of()));
   }
+
+  @ExceptionHandler(org.springframework.web.method.annotation.HandlerMethodValidationException.class)
+  public ResponseEntity<ErrorResponse> handle(
+      org.springframework.web.method.annotation.HandlerMethodValidationException ex) {
+    log.warn("HandlerMethodValidationException: {}", ex.getMessage());
+
+    return ResponseEntity.badRequest()
+        .body(new ErrorResponse(
+            400,
+            "HandlerMethodValidationException",
+            "입력값이 유효하지 않습니다.",
+            Map.of()
+        ));
+  }
 }
