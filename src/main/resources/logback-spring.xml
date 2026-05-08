@@ -17,7 +17,12 @@
     </rollingPolicy>
     <encoder>
       <pattern>
-        %d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %-36logger{36} - %msg%n
+        %d{yy-MM-dd HH:mm:ss.SSS}
+        [%thread]
+        %-5level
+        %-36logger{36}
+        [%X{requestId} | %X{method} | %X{url}]
+        - %msg%n
       </pattern>
     </encoder>
   </appender>
