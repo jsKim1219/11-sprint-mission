@@ -7,6 +7,8 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.exception.channel.ChannelNotFoundException;
+import com.sprint.mission.discodeit.exception.readstatus.ReadStatusAlreadyExistsException;
+import com.sprint.mission.discodeit.exception.readstatus.ReadStatusNotFoundException;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.ReadStatusMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
@@ -50,7 +52,7 @@ public class BasicReadStatusService implements ReadStatusService {
     if (readStatusRepository.existsByUserIdAndChannelId(request.userId(), request.channelId())) {
       log.warn("읽음 상태 생성 실패(이미 상태 존재) - userId: {}, channelId: {}",
           request.userId(), request.channelId());
-      throw new IllegalArgumentException("이미 해당 채널의 읽음 상태 정보가 존재합니다.");
+      throw new ReadStatusAlreadyExistsException(request.userId(), request.channelId());
     }
     ReadStatus readStatus = new ReadStatus(user, channel, request.lastReadAt());
     readStatusRepository.save(readStatus);
@@ -62,7 +64,7 @@ public class BasicReadStatusService implements ReadStatusService {
     ReadStatus readStatus = readStatusRepository.findById(id)
         .orElseThrow(() -> {
           log.warn("읽음 상태 조회 실패(존재하지 않는 정보) - id: {}", id);
-          return new IllegalArgumentException("정보를 찾을 수 없습니다.");
+          return new ReadStatusNotFoundException(id);
         });
     return readStatusMapper.toDto(readStatus);
   }
@@ -79,7 +81,7 @@ public class BasicReadStatusService implements ReadStatusService {
     ReadStatus readStatus = readStatusRepository.findById(id)
         .orElseThrow(() -> {
           log.warn("읽음 상태 수정 실패(존재하지 않는 정보) - id: {}", id);
-          return new IllegalArgumentException("정보를 찾을 수 없습니다.");
+          return new ReadStatusNotFoundException(id);
         });
     readStatus.update(request.newLastReadAt());
     return readStatusMapper.toDto(readStatus);

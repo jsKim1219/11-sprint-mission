@@ -6,6 +6,8 @@ import com.sprint.mission.discodeit.dto.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
+import com.sprint.mission.discodeit.exception.userstatus.UserStatusAlreadyExistsException;
+import com.sprint.mission.discodeit.exception.userstatus.UserStatusNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserStatusMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
@@ -38,7 +40,7 @@ public class BasicUserStatusService implements UserStatusService {
         });
     if (userStatusRepository.existsByUserId(request.userId())) {
       log.warn("상태 생성 실패(이미 존재하는 상태) - userId: {}", request.userId());
-      throw new IllegalArgumentException("이미 해당 사용자의 상태 정보가 존재합니다.");
+      throw new UserStatusAlreadyExistsException(request.userId());
     }
     UserStatus userStatus = new UserStatus(user);
     userStatusRepository.save(userStatus);
@@ -50,7 +52,7 @@ public class BasicUserStatusService implements UserStatusService {
     UserStatus userStatus = userStatusRepository.findById(id).orElseThrow(
         () -> {
           log.warn("상태 조회 실패(존재하지 않는 상태) - id: {}", id);
-          return new IllegalArgumentException("상태 정보를 찾을 수 없습니다.");
+          return new UserStatusNotFoundException(id);
         });
     return userStatusMapper.toDto(userStatus);
   }
@@ -67,7 +69,7 @@ public class BasicUserStatusService implements UserStatusService {
     UserStatus userStatus = userStatusRepository.findById(id).orElseThrow(
         () -> {
           log.warn("상태 수정 실패(존재하지 않는 상태) - id: {}", id);
-          return new IllegalArgumentException("상태 정보를 찾을 수 없습니다.");
+          return new UserStatusNotFoundException(id);
         });
     userStatus.update(request.newLastActiveAt());
   }
@@ -78,7 +80,7 @@ public class BasicUserStatusService implements UserStatusService {
     UserStatus userStatus = userStatusRepository.findByUserId(userId).orElseThrow(
         () -> {
           log.warn("상태 수정 실패(존재하지 않는 유저) - userId: {}", userId);
-          return new IllegalArgumentException("해당 사용자의 상태 정보를 찾을 수 없습니다.");
+          return new UserNotFoundException(userId);
         });
     userStatus.update(request.newLastActiveAt());
     return userStatusMapper.toDto(userStatus);
