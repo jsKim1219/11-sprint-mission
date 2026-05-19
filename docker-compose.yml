@@ -19,6 +19,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      STORAGE_TYPE: s3
     volumes:
       - app_storage:/app/BinaryContentStorage
     ports:
