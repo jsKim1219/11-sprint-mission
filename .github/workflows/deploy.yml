@@ -51,7 +51,7 @@ jobs:
       - name: Stop existing ECS task
         run: |
           aws ecs update-service --cluster ${{ vars.ECS_CLUSTER }} --service ${{ vars.ECS_SERVICE }} --desired-count 0
-          sleep 15
+          sleep 60
 
       - name: Start new ECS task
         run: aws ecs update-service --cluster ${{ vars.ECS_CLUSTER }} --service ${{ vars.ECS_SERVICE }} --task-definition ${{ vars.ECS_TASK_DEFINITION }} --desired-count 1
