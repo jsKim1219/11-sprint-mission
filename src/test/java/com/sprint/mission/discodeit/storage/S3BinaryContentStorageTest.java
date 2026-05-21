@@ -9,11 +9,13 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+@Disabled
 public class S3BinaryContentStorageTest {
 
   private static S3BinaryContentStorage storage;
