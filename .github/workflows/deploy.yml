@@ -46,7 +46,8 @@ jobs:
         run: |
           aws ecs describe-task-definition --task-definition ${{ vars.ECS_TASK_DEFINITION }} --query taskDefinition > task-def.json
           jq --arg IMAGE "$NEW_IMAGE" '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' task-def.json > new-task-def.json
-          aws ecs register-task-definition --cli-input-json file://new-task-def.json
+          NEW_REVISION=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json --query 'taskDefinition.taskDefinitionArn' --output text)
+          echo "REVISION_ARN=$NEW_REVISION" >> $GITHUB_ENV
 
       - name: Stop existing ECS task
         run: |
