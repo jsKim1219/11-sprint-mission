@@ -22,4 +22,4 @@ COPY --from=builder /app/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar app.j
 
 EXPOSE 80
 
-CMD sh -c ["java $JVM_OPTS -jar app.jar"]
+CMD java $JVM_OPTS -jar app.jar
